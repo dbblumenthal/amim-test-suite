@@ -2,6 +2,7 @@ import abc
 
 
 class AlgorithmWrapper(object):
+    """Abstract wrapper class for the network enrichment algorithms used in the tests."""
 
     @abc.abstractmethod
     def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes):
@@ -22,16 +23,5 @@ class AlgorithmWrapper(object):
         -------
         result_genes : list of str
             Set of genes computed by the algorithm.
-        """
-        pass
-
-    @abc.abstractmethod
-    def __str__(self):
-        """Provides a string representation of the wrapped algorithm.
-
-        Returns
-        -------
-        string_representation : str
-            String representation of the wrapped algorithm.
         """
         pass

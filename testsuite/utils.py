@@ -9,6 +9,9 @@ class ConditionSelector(Enum):
     """Enum specifying for which condition the tests should be run."""
     LUNG_CANCER = 'LUNG_CANCER'
 
+    def __str__(self):
+        return self.value
+
 
 class GGINetworkSelector(Enum):
     """Enum specifying on which GGI network the tests should be run."""
@@ -18,6 +21,9 @@ class GGINetworkSelector(Enum):
     APID = 'APID'
     IID = 'IID'
 
+    def __str__(self):
+        return self.value
+
 
 class NetworkGeneratorSelector(Enum):
     """Enum specifying which random generator should be used."""
@@ -25,6 +31,18 @@ class NetworkGeneratorSelector(Enum):
     SHUFFLED = 'SHUFFLED'
     SCALE_FREE = 'SCALE_FREE'
     UNIFORM = 'UNIFORM'
+
+    def __str__(self):
+        return self.value
+
+
+# todo: add one member for each algorithm
+class AlgorithmSelector(Enum):
+    """Enum specifying which network enrichment algorithm should be used."""
+    DIAMOND = 'DIAMOND'
+
+    def __str__(self):
+        return self.value
 
 
 def gene_id_attribute_name():
@@ -103,6 +121,19 @@ def load_pathways(condition_selector):
     pathways : list of str
         Names of phenotype-related pathways.
     """
+    pass
+
+
+# todo: implement this method
+def get_algorithm_wrapper(algorithm_selector):
+    """Returns the appropriate algorithm based on the selection.
+
+    Parameters
+    ----------
+    algorithm_selector : AlgorithmSelector
+        Specifies which algorithm should be used.
+    """
+    pass
 
 
 # todo: implement this method
