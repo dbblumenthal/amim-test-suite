@@ -2,6 +2,7 @@ import testsuite.utils as utils
 import testsuite.meaningfulness_scores as scores
 import testsuite.network_generators as generators
 import pandas as pd
+import numpy as np
 import argparse
 
 
@@ -35,8 +36,10 @@ class TestRunner(object):
                                             utils.NetworkGeneratorSelector.SCALE_FREE,
                                             utils.NetworkGeneratorSelector.UNIFORM]
         self.ggi_network_names = []
+        self.random_seeds = []
         self.network_generator_names = []
         self.condition_names = []
+        self.nums_seed_genes = []
         self.lcc_ratios = []
         self.mean_shortest_distances = []
         self.algorithm_names = []
@@ -44,13 +47,15 @@ class TestRunner(object):
         self.neg_log_gsea_p_values = []
         self.results = None
 
-    def run_on_network(self, ggi_network, ggi_network_name, network_generator_name, condition_selector):
+    def run_on_network(self, ggi_network, seed, ggi_network_name, network_generator_name, condition_selector):
         """Runs the tests for a given condition on a given network.
 
         Parameters
         ----------
         ggi_network : nx.Graph
             Possibly randomized GGI network.
+        seed : convertible to np.uint32 or None
+            Seed used by the generator.
         ggi_network_name : str
             String representation of the original GGI network.
         network_generator_name : str
@@ -69,8 +74,10 @@ class TestRunner(object):
             mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
             neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
             self.ggi_network_names.append(ggi_network_name)
+            self.random_seeds.append(seed)
             self.network_generator_names.append(network_generator_name)
             self.condition_names.append(str(condition_selector))
+            self.nums_seed_genes.append(len(seed_genes))
             self.lcc_ratios.append(lcc_ratio)
             self.mean_shortest_distances.append(mean_shortest_distance)
             self.algorithm_names.append(str(algorithm_selector))
@@ -109,9 +116,10 @@ class TestRunner(object):
         original_ggi_network = self.ggi_networks[ggi_network_selector]
         ggi_network_name = str(ggi_network_selector)
         network_generator_name = str(network_generator_selector)
-        for _ in range(k):
-            ggi_network = generators.generate_network(original_ggi_network, network_generator_selector)
-            self.run_on_network(ggi_network, ggi_network_name, network_generator_name, condition_selector)
+        seeds = [np.random.randint(low=0, high=np.iinfo(np.uint32).max) for _ in range(k)]
+        for seed in seeds:
+            ggi_network = generators.generate_network(original_ggi_network, seed, network_generator_selector)
+            self.run_on_network(ggi_network, seed, ggi_network_name, network_generator_name, condition_selector)
 
     def clear_results(self):
         """Clears the results of the last previous run."""
@@ -148,8 +156,10 @@ class TestRunner(object):
                         print(f'\t\tgenerator = {network_generator_selector}')
                     self.run_on_random_networks(ggi_network_selector, condition_selector, network_generator_selector, k)
         self.results = pd.DataFrame({'ggi_network_name': self.ggi_network_names,
+                                     'random_seed': self.random_seeds,
                                      'network_generator_name': self.network_generator_names,
                                      'condition_name': self.condition_names,
+                                     'num_seed_genes': self.nums_seed_genes,
                                      'lcc_ratio': self.lcc_ratios,
                                      'mean_shortest_distance': self.mean_shortest_distances,
                                      'algorithm_name': self.algorithm_names,
