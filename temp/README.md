@@ -1,0 +1,1 @@
+This directory should be used for saving temporary files used be the network algorithms. 

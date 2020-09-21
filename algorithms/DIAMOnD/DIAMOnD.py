@@ -412,13 +412,8 @@ def DIAMOnD(G_original,seed_genes,max_number_of_added_nodes,alpha,outfile = None
                                                      max_number_of_added_nodes,alpha)
     # 3. saving the results 
     with open(outfile,'w') as fout:
-        fout.write('\t'.join(['#rank','DIAMOnD_node']))
-        rank = 0
         for DIAMOnD_node_info in added_nodes:
-            rank += 1
-            DIAMOnD_node = DIAMOnD_node_info[0]
-            p = float(DIAMOnD_node_info[3])
-            fout.write('\t'.join(map(str,([rank,DIAMOnD_node]))))
+            fout.write(f'{DIAMOnD_node_info[0]}\n')
 
     return added_nodes
 
