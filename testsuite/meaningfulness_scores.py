@@ -19,7 +19,7 @@ def compute_mean_mutual_information(expression_data, phenotypes, result_genes):
     mutual_information_score : float
         Mean mutual information between expression of selected genes and the phenotypes.
     """
-    mutual_information = skf.mutual_info_classif(expression_data.loc[:, result_genes], phenotypes)
+    mutual_information = skf.mutual_info_classif(expression_data.loc[:, result_genes], phenotypes, discrete_features=False)
     return np.mean(mutual_information)
 
 

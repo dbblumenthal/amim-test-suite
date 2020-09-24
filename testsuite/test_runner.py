@@ -14,9 +14,8 @@ class TestRunner(object):
         self.ggi_network_selectors = list(utils.GGINetworkSelector)
         self.condition_selectors = list(utils.ConditionSelector)
         self.algorithm_selectors = list(utils.AlgorithmSelector)
-        self.ggi_networks = {sel: utils.load_ggi_network(sel) for sel in self.ggi_network_selectors}
         self.phenotypes = {sel: utils.load_phenotypes(sel) for sel in self.condition_selectors}
-        self.pathways = {sel: utils.load_pathways(sel) for sel in self.condition_selectors}
+        self.pathways = {sel: utils.get_pathways(sel) for sel in self.condition_selectors}
         self.expression_data = {sel: utils.load_expression_data(sel) for sel in self.condition_selectors}
         self.gene_scores = {sel: utils.compute_gene_scores(self.expression_data[sel], self.phenotypes[sel]) for sel in self.condition_selectors}
         self.seed_genes = {sel: utils.extract_seed_genes(self.gene_scores[sel]) for sel in self.condition_selectors}
@@ -29,6 +28,7 @@ class TestRunner(object):
         self.nums_seed_genes = []
         self.lcc_ratios = []
         self.mean_shortest_distances = []
+        self.mean_degrees = []
         self.mean_mutual_informations = []
         self.neg_log_gsea_p_values = []
         self.results = None
@@ -65,7 +65,7 @@ class TestRunner(object):
             algorithm_wrapper = self.algorithm_wrappers[algorithm_selector]
             for run in range(num_runs):
                 print(f'\t\t\trun {run + 1} of {num_runs}')
-                result_genes = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes, seed_genes)
+                result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes, seed_genes)
                 mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
                 neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
                 self.ggi_network_names.append(ggi_network_name)
@@ -76,6 +76,7 @@ class TestRunner(object):
                 self.lcc_ratios.append(lcc_ratio)
                 self.mean_shortest_distances.append(mean_shortest_distance)
                 self.algorithm_names.append(str(algorithm_selector))
+                self.mean_degrees.append(mean_degree)
                 self.mean_mutual_informations.append(mean_mutual_information)
                 self.neg_log_gsea_p_values.append(neg_log_gsea_p_value)
 
@@ -93,7 +94,7 @@ class TestRunner(object):
         verbose : bool
             Print progress to stdout.
         """
-        ggi_network = self.ggi_networks[ggi_network_selector]
+        ggi_network = utils.load_ggi_network(ggi_network_selector, self.expression_data[condition_selector])
         ggi_network_name = str(ggi_network_selector)
         network_generator_name = str(utils.NetworkGeneratorSelector.ORIGINAL)
         self.run_on_network(ggi_network, -1, ggi_network_name, network_generator_name, condition_selector, num_runs, verbose)
@@ -115,7 +116,7 @@ class TestRunner(object):
         verbose : bool
             Print progress to stdout.
         """
-        original_ggi_network = self.ggi_networks[ggi_network_selector]
+        original_ggi_network = utils.load_ggi_network(ggi_network_selector, self.expression_data[condition_selector])
         ggi_network_name = str(ggi_network_selector)
         network_generator_name = str(network_generator_selector)
         seeds = [np.random.randint(low=0, high=np.iinfo(np.uint32).max) for _ in range(num_randomizations)]
@@ -125,12 +126,15 @@ class TestRunner(object):
 
     def clear(self):
         """Clears the results of the last previous run."""
-        self.ggi_network_names = []
         self.network_generator_names = []
+        self.ggi_network_names = []
         self.condition_names = []
+        self.algorithm_names = []
+        self.random_seeds = []
+        self.nums_seed_genes = []
         self.lcc_ratios = []
         self.mean_shortest_distances = []
-        self.algorithm_names = []
+        self.mean_degrees = []
         self.mean_mutual_informations = []
         self.neg_log_gsea_p_values = []
         self.results = None
@@ -171,6 +175,7 @@ class TestRunner(object):
                                      'num_seed_genes': self.nums_seed_genes,
                                      'lcc_ratio': self.lcc_ratios,
                                      'mean_shortest_distance': self.mean_shortest_distances,
+                                     'mean_degree': self.mean_degrees,
                                      'mean_mutual_information': self.mean_mutual_informations,
                                      'neg_log_gsea_p_value': self.neg_log_gsea_p_values})
 

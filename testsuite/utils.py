@@ -1,13 +1,21 @@
-from enum import Enum, auto
+from enum import Enum
 import networkx as nx
 import numpy as np
+import pandas as pd
 import itertools as itt
+from testsuite.hierarchical_hotnet_wrapper import HierarchicalHotNetWrapper
+from testsuite.clustex2_wrapper import ClustEx2Wrapper
+from testsuite.diamond_wrapper import DIAMOnDWrapper
+from testsuite.gxna_wrapper import GXNAWrapper
 
 
 # todo: add one member for each condition
 class ConditionSelector(Enum):
     """Enum specifying for which condition the tests should be run."""
-    LUNG_CANCER = 'LUNG_CANCER'
+    ALS = 'GSE112680'
+    LC = 'GSE30219'
+    UC = 'GSE75214'
+    HD = 'GSE3790'
 
     def __str__(self):
         return self.value
@@ -15,7 +23,7 @@ class ConditionSelector(Enum):
 
 class GGINetworkSelector(Enum):
     """Enum specifying on which GGI network the tests should be run."""
-    BioGRID = 'BioGRID'
+    BIOGRID = 'BIOGRID'
     HPRD = 'HPRD'
     STRING = 'STRING'
     APID = 'APID'
@@ -42,40 +50,36 @@ class AlgorithmSelector(Enum):
     """Enum specifying which network enrichment algorithm should be used."""
     DIAMOND = 'DIAMOND'
     GXNA = 'GXNA'
+    CLUSTEX2 = 'CLUSTEX2'
+    HOTNET = 'HOTNET'
 
     def __str__(self):
         return self.value
 
 
-def gene_id_attribute_name():
-    """Returns the name of the gene ID attribute in the networkx graphs.
-
-    Returns
-    -------
-    gene_id_attribute_name : str
-        Name of the gene ID attribute in the networkx graphs.
-    """
-    return 'GeneID'
-
-
-# todo: implement this method
-def load_ggi_network(ggi_network_selector):
-    """Loads the selected GGI network.
+def load_ggi_network(ggi_network_selector, expression_data):
+    """Loads the selected GGI network and removes all genes not contained in the expression data.
 
     Parameters
     ----------
     ggi_network_selector : GGINetworkSelector
         Specifies which GGI network should be loaded.
+    expression_data : pd.DataFrame
+        Expression data (indices are sample IDs, column names are gene IDs).
 
     Returns
     -------
     ggi_network : nx.Graph
-        The selected GGI network as a networkx graph.
+        The selected GGI network as a networkx graph without genes not contained in the expression data.
     """
-    pass
+    ggi_network = nx.read_graphml(f'../data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
+    gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
+    selected_genes = set(expression_data.columns)
+    selected_nodes = [node for node in ggi_network.nodes() if gene_ids[node] in selected_genes]
+    ggi_network = ggi_network.subgraph(selected_nodes).copy()
+    return nx.convert_node_labels_to_integers(ggi_network)
 
 
-# todo: implement this method
 def load_phenotypes(condition_selector):
     """Loads the phenotypes for the selected condition.
 
@@ -89,10 +93,9 @@ def load_phenotypes(condition_selector):
     phenotypes : phenotypes : np.array, shape (n_samples,)
         Phenotype data (indices are sample IDs).
     """
-    pass
+    return np.load(f'../data/conditions/{str(condition_selector)}/phenotypes.npy')
 
 
-# todo: implement this method
 def load_expression_data(condition_selector):
     """Loads the expression data for the selected condition.
 
@@ -106,12 +109,11 @@ def load_expression_data(condition_selector):
     expression_data : pd.DataFrame
         Expression data (indices are sample IDs, column names are gene IDs).
     """
-    pass
+    return pd.read_csv(f'../data/conditions/{str(condition_selector)}/expression_data.csv.zip', index_col=0)
 
 
-# todo: implement this method
-def load_pathways(condition_selector):
-    """Loads the pathways associated to the selected condition.
+def get_pathways(condition_selector):
+    """Returns the names of the KEGG pathways associated to the selected condition.
 
     Parameters
     ----------
@@ -121,12 +123,19 @@ def load_pathways(condition_selector):
     Returns
     -------
     pathways : list of str
-        Names of phenotype-related pathways.
+        Names of phenotype-related KEGG pathways.
     """
-    pass
+    if condition_selector == ConditionSelector.ALS:
+        return ['hsa05014']
+    elif condition_selector == ConditionSelector.LC:
+        return ['hsa05223']
+    elif condition_selector == ConditionSelector.UC:
+        return ['hsa04060', 'hsa04630', 'hsa05321']
+    elif condition_selector == ConditionSelector.HD:
+        return ['hsa05016']
 
 
-# todo: implement this method
+# todo: add cases for missing wrappers
 def get_algorithm_wrapper(algorithm_selector):
     """Returns the appropriate algorithm based on the selection.
 
@@ -135,7 +144,14 @@ def get_algorithm_wrapper(algorithm_selector):
     algorithm_selector : AlgorithmSelector
         Specifies which algorithm should be used.
     """
-    pass
+    if algorithm_selector == AlgorithmSelector.GXNA:
+        return GXNAWrapper()
+    elif algorithm_selector == AlgorithmSelector.CLUSTEX2:
+        return ClustEx2Wrapper()
+    elif algorithm_selector == AlgorithmSelector.DIAMOND:
+        return DIAMOnDWrapper()
+    elif algorithm_selector == AlgorithmSelector.HOTNET:
+        return HierarchicalHotNetWrapper()
 
 
 # todo: implement this method
@@ -191,7 +207,7 @@ def compute_seed_statistics(ggi_network, seed_genes):
     mean_shortest_distance : float
         The mean shortest distance between the seed genes in the GGI network.
     """
-    gene_ids = nx.get_node_attributes(ggi_network, gene_id_attribute_name())
+    gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
     seed_nodes = [node for node in ggi_network.nodes() if gene_ids[node] in set(seed_genes)]
     subgraph = ggi_network.subgraph(seed_nodes)
     lcc_ratio = np.max([len(comp) for comp in nx.connected_components(subgraph)]) / subgraph.number_of_nodes()
@@ -202,46 +218,3 @@ def compute_seed_statistics(ggi_network, seed_genes):
         num_combinations += 1
     mean_shortest_distance = sum_shortest_distances / num_combinations
     return lcc_ratio, mean_shortest_distance
-
-
-def save_network_as_edge_list(ggi_network, path_to_edge_list, sep, header):
-    """Saves a GGI network as an edge list.
-
-    Parameters
-    ----------
-    ggi_network : nx.Graph
-        GGI network that should be saved.
-    path_to_edge_list : str
-        Path to the output file.
-    sep : str
-        Separator for source and target of an edge.
-    header : str or None
-        If not None, a header is written to the output file.
-    """
-    with open(path_to_edge_list, 'w') as edge_list_file:
-        if header is not None:
-            edge_list_file.write(f'{header}\n')
-        gene_ids = nx.get_node_attributes(ggi_network, gene_id_attribute_name())
-        for u, v in ggi_network.edges():
-            edge_list_file.write(f'{gene_ids[u]}{sep}{gene_ids[v]}\n')
-
-
-def save_array(array, path_to_array, sep, header):
-    """Saves an array in a text-file.
-
-    Parameters
-    ----------
-    array : list or np.array, shape (n,)
-        Array that should be saved.
-    path_to_array : str
-        Path to the output file.
-    sep : str
-        Separator for the values in the array.
-    header : str or None
-        If not None, a header is written to the output file.
-    """
-    with open(path_to_array, 'w') as array_file:
-        if header is not None:
-            array_file.write(f'{header}{sep}')
-        for value in array:
-            array_file.write(f'{value}{sep}')
