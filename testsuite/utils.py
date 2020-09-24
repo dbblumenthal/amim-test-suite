@@ -27,6 +27,7 @@ class GGINetworkSelector(Enum):
 
 class NetworkGeneratorSelector(Enum):
     """Enum specifying which random generator should be used."""
+    ORIGINAL = 'ORIGINAL'
     REWIRED = 'REWIRED'
     SHUFFLED = 'SHUFFLED'
     SCALE_FREE = 'SCALE_FREE'
@@ -40,6 +41,7 @@ class NetworkGeneratorSelector(Enum):
 class AlgorithmSelector(Enum):
     """Enum specifying which network enrichment algorithm should be used."""
     DIAMOND = 'DIAMOND'
+    GXNA = 'GXNA'
 
     def __str__(self):
         return self.value
@@ -137,8 +139,8 @@ def get_algorithm_wrapper(algorithm_selector):
 
 
 # todo: implement this method
-def extract_seed_genes(expression_data, phenotypes):
-    """Extracts the seed genes from the expression data and the phenotypes.
+def compute_gene_scores(expression_data, phenotypes):
+    """Computes gene scores from the expression data and the phenotypes.
 
     Parameters
     ----------
@@ -149,10 +151,27 @@ def extract_seed_genes(expression_data, phenotypes):
 
     Returns
     -------
+    gene_scores : dict of str: float
+            Gene scores (keys are gene IDs).
+    """
+    return dict()
+
+
+# todo: implement this method
+def extract_seed_genes(gene_scores):
+    """Extracts the seed genes from previously computed gene scores.
+
+    Parameters
+    ----------
+    gene_scores : dict of str: float
+        Gene scores (keys are gene IDs).
+
+    Returns
+    -------
     seed_genes : list of str
             Seed genes (entries are gene IDs).
     """
-    return []
+    return list()
 
 
 def compute_seed_statistics(ggi_network, seed_genes):
@@ -183,3 +202,46 @@ def compute_seed_statistics(ggi_network, seed_genes):
         num_combinations += 1
     mean_shortest_distance = sum_shortest_distances / num_combinations
     return lcc_ratio, mean_shortest_distance
+
+
+def save_network_as_edge_list(ggi_network, path_to_edge_list, sep, header):
+    """Saves a GGI network as an edge list.
+
+    Parameters
+    ----------
+    ggi_network : nx.Graph
+        GGI network that should be saved.
+    path_to_edge_list : str
+        Path to the output file.
+    sep : str
+        Separator for source and target of an edge.
+    header : str or None
+        If not None, a header is written to the output file.
+    """
+    with open(path_to_edge_list, 'w') as edge_list_file:
+        if header is not None:
+            edge_list_file.write(f'{header}\n')
+        gene_ids = nx.get_node_attributes(ggi_network, gene_id_attribute_name())
+        for u, v in ggi_network.edges():
+            edge_list_file.write(f'{gene_ids[u]}{sep}{gene_ids[v]}\n')
+
+
+def save_array(array, path_to_array, sep, header):
+    """Saves an array in a text-file.
+
+    Parameters
+    ----------
+    array : list or np.array, shape (n,)
+        Array that should be saved.
+    path_to_array : str
+        Path to the output file.
+    sep : str
+        Separator for the values in the array.
+    header : str or None
+        If not None, a header is written to the output file.
+    """
+    with open(path_to_array, 'w') as array_file:
+        if header is not None:
+            array_file.write(f'{header}{sep}')
+        for value in array:
+            array_file.write(f'{value}{sep}')

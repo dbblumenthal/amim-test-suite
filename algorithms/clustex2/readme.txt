@@ -1,0 +1,1 @@
+Please go to the website http://bioinfo.au.tsinghua.edu.cn/member/jgu/clustex/clustex2/user_manual.htm for detail usage of ClustEx 2.0

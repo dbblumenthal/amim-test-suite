@@ -1,3 +1,17 @@
+# Result and temp directories
+/temp/*
+!/temp/README.md
+
+/results/*
+!/results/README.md
+
+/algorithms/hierarchical-hotnet/examples/results/
+/algorithms/hierarchical-hotnet/examples/intermediate/
+
+# Binaries
+/algorithms/clustex2/clustex2
+/algorithms/gxna/gxna
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +19,39 @@ __pycache__/
 
 # C extensions
 *.so
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
 
 # Distribution / packaging
 .Python

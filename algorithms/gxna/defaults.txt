@@ -1,0 +1,8 @@
+algoType 1
+depth 15
+runDOT 0
+nPerms 1000
+outputDir ../../temp/
+graphCount 1
+maxRows 250
+maxOverlap 0.75

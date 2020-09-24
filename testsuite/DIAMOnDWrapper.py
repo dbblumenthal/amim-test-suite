@@ -6,7 +6,7 @@ import subprocess
 
 class DIAMOnDWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores):
         """Runs the algorithm.
 
         Parameters
@@ -19,6 +19,8 @@ class DIAMOnDWrapper(AlgorithmWrapper):
             Phenotype data (indices are sample IDs).
         seed_genes : list of str
             Seed genes (entries are gene IDs).
+        gene_scores : dict of str: float
+            Scores for all genes (keys are gene IDs).
 
         Returns
         -------
@@ -27,31 +29,27 @@ class DIAMOnDWrapper(AlgorithmWrapper):
         """
 
         # Write GGI network in format required by DIAMOnD.
-        path_to_network = '../temp/DIAMOnD_ggi.txt'
-        with open(path_to_network, 'w') as diamond_network:
-            gene_ids = nx.get_node_attributes(ggi_network, utils.gene_id_attribute_name())
-            for u, v in ggi_network.edges():
-                diamond_network.write(f'{gene_ids[u]},{gene_ids[v]}\n')
+        path_ggi = '../temp/diamond_ggi.txt'
+        utils.save_network_as_edge_list(ggi_network, path_ggi, ',', None)
 
         # Write seed genes in format required by DIAMOnD.
-        path_to_seeds = '../temp/DIAMOnD_seed_genes.txt'
-        with open(path_to_seeds, 'w') as diamond_seed_genes:
-            for seed_gene in seed_genes:
-                diamond_seed_genes.write(f'{seed_gene}\n')
+        path_seeds = '../temp/diamond_seed_genes.txt'
+        utils.save_array(seed_genes, path_seeds, '\n', None)
 
         # Run DIAMOnD.
-        path_to_diamond = '../algorithms/DIAMOnD/DIAMOnD.py'
-        path_to_output = '../temp/DIAMOnD_results.txt'
-        subprocess.call(f'python {path_to_diamond} {path_to_network} {path_to_seeds} 200 1 {path_to_output}')
+        diamond = '../algorithms/diamond/DIAMOnD.py'
+        path_output = '../temp/diamond_results.txt'
+        command = f'python {diamond} {path_ggi} {path_seeds} 200 1 {path_output}'
+        subprocess.call(command, shell=True)
 
         # Read the results.
         result_genes = []
-        with open(path_to_output, 'r') as diamond_results:
+        with open(path_output, 'r') as diamond_results:
             for line in diamond_results:
                 result_genes.append(line.strip())
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/DIAMOnD_*')
+        subprocess.call('rm ../temp/diamond_*')
 
         # Return the results.
         return result_genes

@@ -5,7 +5,7 @@ class AlgorithmWrapper(object):
     """Abstract wrapper class for the network enrichment algorithms used in the tests."""
 
     @abc.abstractmethod
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores):
         """Runs the algorithm.
 
         Parameters
@@ -18,6 +18,8 @@ class AlgorithmWrapper(object):
             Phenotype data (indices are sample IDs).
         seed_genes : list of str
             Seed genes (entries are gene IDs).
+        gene_scores : dict of str: float
+            Scores for all genes (keys are gene IDs).
 
         Returns
         -------
