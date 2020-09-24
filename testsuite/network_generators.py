@@ -4,7 +4,7 @@ import testsuite.utils as utils
 
 
 def generate_rewired_network(ggi_network, seed):
-    """Generates random GGI network where nodes keep their degrees but edges are rewired.
+    """Generates random GGI network where nodes keep their expected degrees.
 
     Parameters
     ----------
@@ -16,7 +16,7 @@ def generate_rewired_network(ggi_network, seed):
     Returns
     -------
     rewired_network : nx.Graph
-        Random GGI network where nodes keep their degrees but edges are rewired.
+        Random GGI network where nodes keep their expected degrees.
     """
     degree_view = ggi_network.degree()
     degree_sequence = [degree_view[node] for node in ggi_network.nodes()]
