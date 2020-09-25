@@ -175,7 +175,7 @@ def compute_gene_p_values(expression_data, phenotypes):
     cases = expression_data.loc[phenotypes == 1, ]
     controls = expression_data.loc[phenotypes == 0, ]
     genes = expression_data.columns
-    return {gene: sps.mannwhitneyu(cases[gene], controls[gene], alternative='two_sided')[1] for gene in genes}
+    return {gene: sps.mannwhitneyu(cases[gene], controls[gene], alternative='two-sided')[1] for gene in genes}
 
 
 # todo: implement this method
@@ -213,7 +213,6 @@ def compute_sample_gene_p_values(expression_data):
     sample_gene_p_values = 2.0 * sps.norm.sf(np.fabs(sample_gene_p_values))
     sample_gene_p_values = pd.DataFrame(data=sample_gene_p_values, columns=expression_data.columns)
     return sample_gene_p_values
-
 
 
 def compute_seed_statistics(ggi_network, seed_genes):

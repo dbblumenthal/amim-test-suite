@@ -1,1 +1,0 @@
-This directory contains the expression data and the GGI networks.
