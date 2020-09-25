@@ -54,7 +54,8 @@ class GXNAWrapper(AlgorithmWrapper):
                 mapping_file.write(f'{gene_id} {gene_id}\n')
 
         # Run GXNA.
-        command = f'cd ../algorithms/gxna/; ./gxna -name gxna -phenoFile ../{path_phen} -expFile ../{path_expr} -edgeFile ../{path_ggi} -mapFile ../{path_map}'
+        gxna = 'cd ../algorithms/gxna/; ./gxna'
+        command = f'{gxna} -name gxna -phenoFile ../{path_phen} -expFile ../{path_expr} -edgeFile ../{path_ggi} -mapFile ../{path_map}'
         subprocess.call(command, shell=True)
 
         # Read the results.

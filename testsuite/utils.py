@@ -2,6 +2,7 @@ from enum import Enum
 import networkx as nx
 import numpy as np
 import pandas as pd
+import scipy.stats as sps
 import itertools as itt
 from testsuite.hierarchical_hotnet_wrapper import HierarchicalHotNetWrapper
 from testsuite.clustex2_wrapper import ClustEx2Wrapper
@@ -155,8 +156,8 @@ def get_algorithm_wrapper(algorithm_selector):
 
 
 # todo: implement this method
-def compute_gene_scores(expression_data, phenotypes):
-    """Computes gene scores from the expression data and the phenotypes.
+def compute_gene_p_values(expression_data, phenotypes):
+    """Computes p-values from the expression data and the phenotypes.
 
     Parameters
     ----------
@@ -167,27 +168,52 @@ def compute_gene_scores(expression_data, phenotypes):
 
     Returns
     -------
-    gene_scores : dict of str: float
-            Gene scores (keys are gene IDs).
+    gene_p_values : dict of str: float
+            The p-value of two-sided Mann-Whitney U test (keys are gene IDs).
     """
-    return dict()
+    # todo: replace this dummy implementation
+    cases = expression_data.loc[phenotypes == 1, ]
+    controls = expression_data.loc[phenotypes == 0, ]
+    genes = expression_data.columns
+    return {gene: sps.mannwhitneyu(cases[gene], controls[gene], alternative='two_sided')[1] for gene in genes}
 
 
 # todo: implement this method
-def extract_seed_genes(gene_scores):
-    """Extracts the seed genes from previously computed gene scores.
+def extract_seed_genes(gene_p_values):
+    """Extracts the seed genes from previously computed p-values.
 
     Parameters
     ----------
-    gene_scores : dict of str: float
-        Gene scores (keys are gene IDs).
+    gene_p_values : dict of str: float
+            The p-value of two-sided Mann-Whitney U test (keys are gene IDs).
 
     Returns
     -------
     seed_genes : list of str
-            Seed genes (entries are gene IDs).
+            List of genes with p-value < 0.001.
     """
-    return list()
+    threshold = 0.001
+    return [gene for gene, p_value in gene_p_values.items() if p_value < threshold]
+
+
+def compute_sample_gene_p_values(expression_data):
+    """Transforms the expression data to p-values.
+
+        Parameters
+        ----------
+        expression_data : pd.DataFrame
+            Expression data (indices are sample IDs, column names are gene IDs).
+
+        Returns
+        -------
+        sample_gene_p_values : pd.DataFrame
+            Expression data transformed to p-values assuming normality.
+        """
+    sample_gene_p_values = expression_data.copy()
+    sample_gene_p_values = 2.0 * sps.norm.sf(np.fabs(sample_gene_p_values))
+    sample_gene_p_values = pd.DataFrame(data=sample_gene_p_values, columns=expression_data.columns)
+    return sample_gene_p_values
+
 
 
 def compute_seed_statistics(ggi_network, seed_genes):

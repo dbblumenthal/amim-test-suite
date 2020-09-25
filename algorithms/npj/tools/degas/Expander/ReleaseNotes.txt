@@ -1,0 +1,19 @@
+Expander version 7 includes the following improvements:
+===========================================================
+
+1)ChIP-Seq data analysis support including:
+   * Loading BED/GFF3 peaks file
+   * Mapping peaks to closest gene 
+   * Visualization of peaks chromosomal positions
+   * Visualization of peaks genomic region distribution
+   * Human/Mouse regions enrichment within hits
+   * Visualization of gene expression distribution within ChIP-Seq hits 
+   * Analysis of ChIP-Seq hits enrichment within gene groups
+   * Enrichment analysis within ChIP-Seq hits
+2) Support for simultaneous analysis of more than one data set (same organism)
+3) Addition of Cytoscape interface for improved network visualization
+4) Improved GSEA visualization
+5) Updated PPI data for all orgainsms
+
+
+

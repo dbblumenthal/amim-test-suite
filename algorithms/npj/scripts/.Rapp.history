@@ -1,0 +1,14 @@
+load("/Users/dbblumenthal/PycharmProjects/testing-onfah/scripts/compute_pathways.rda")
+list
+list()
+values
+data()
+load("/Users/dbblumenthal/PycharmProjects/testing-onfah/scripts/compute_pathways.rda", verbose=TRUE)
+getGigaPathways
+getDegasPathways
+runDegas
+runPinnacle
+getBionetPathways
+getCosinePathways
+get_components_PPI
+RunKpm

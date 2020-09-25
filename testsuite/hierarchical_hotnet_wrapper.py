@@ -46,31 +46,31 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
                 gene_score_file.write(f'{gene_id}\t{gene_scores[gene_id]}\n')
 
         # Run Hierarchical HotNet.
-        hotnet_sim_matrix = '../algorithms/hierarchical-hotnet/src/construct_similarity_matrix.py'
-        hotnet_find_bins = '../algorithms/hierarchical-hotnet/src/find_permutation_bins.py'
-        hotnet_permute = '../algorithms/hierarchical-hotnet/src/permute_scores.py'
-        hotnet_constr_hierarchy = '../algorithms/hierarchical-hotnet/src/construct_hierarchy.py'
-        hotnet_proc_hierarchies = '../algorithms/hierarchical-hotnet/src/process_hierarchies.py'
-        path_sim_matrix = '../temp/hotnet_similarity_matrix.h5'
-        command = f'python {hotnet_sim_matrix} -i {path_ggi} -o {path_sim_matrix}'
+        hotnet_sim_matrix = 'cd ../algorithms/hierarchical-hotnet/src/; python construct_similarity_matrix.py'
+        hotnet_find_bins = 'cd ../algorithms/hierarchical-hotnet/src/; python find_permutation_bins.py'
+        hotnet_permute = 'cd ../algorithms/hierarchical-hotnet/src/; python permute_scores.py'
+        hotnet_constr_hierarchy = 'cd ../algorithms/hierarchical-hotnet/src/; python construct_hierarchy.py'
+        hotnet_proc_hierarchies = 'cd ../algorithms/hierarchical-hotnet/src/; python process_hierarchies.py'
+        path_sim_matrix = '../../../temp/hotnet_similarity_matrix.h5'
+        command = f'{hotnet_sim_matrix} -i ../../{path_ggi} -o {path_sim_matrix}'
         subprocess.call(command, shell=True)
-        path_bins = '../temp/hotnet_score_bins.tsv'
-        command = f'python {hotnet_find_bins} -gsf {path_scores} -igf {path_index_gene} -elf {path_ggi} -o {path_bins}'
+        path_bins = '../../../temp/hotnet_score_bins.tsv'
+        command = f'{hotnet_find_bins} -gsf ../../{path_scores} -igf ../../{path_index_gene} -elf ../../{path_ggi} -o {path_bins}'
         subprocess.call(command, shell=True)
         num_perms = 100
         paths_scores = [path_scores] + [f'../temp/hotnet_gene_scores_{i + 1}.tsv' for i in range(num_perms)]
         for i in range(num_perms):
-            command = f'python {hotnet_permute} -i {path_scores} -bf {path_bins} -o {paths_scores[i + 1]}'
+            command = f'{hotnet_permute} -i ../../{path_scores} -bf {path_bins} -o ../../{paths_scores[i + 1]}'
             subprocess.call(command, shell=True)
-        paths_h_ggis = [f'../temp/hotnet_ggi_{i}.tsv' for i in range(num_perms + 1)]
-        paths_h_index_genes = [f'../temp/hotnet_index_gene_{i}.tsv' for i in range(num_perms + 1)]
+        paths_h_ggis = [f'../../../temp/hotnet_ggi_{i}.tsv' for i in range(num_perms + 1)]
+        paths_h_index_genes = [f'../../../temp/hotnet_index_gene_{i}.tsv' for i in range(num_perms + 1)]
         for i in range(num_perms + 1):
-            command = f'python {hotnet_constr_hierarchy} -smf {path_sim_matrix} -igf {path_index_gene} ' \
-                      f'-gsf {path_scores[i]} -helf {paths_h_ggis[i]} -higf {paths_h_index_genes[i]}'
+            command = f'{hotnet_constr_hierarchy} -smf {path_sim_matrix} -igf ../../{path_index_gene} ' \
+                      f'-gsf ../../{paths_scores[i]} -helf {paths_h_ggis[i]} -higf {paths_h_index_genes[i]}'
             subprocess.call(command, shell=True)
         path_clusters = '../temp/hotnet_clusters.tsv'
-        command = f'python {hotnet_proc_hierarchies} -oelf {paths_h_ggis[0]} -oigf {paths_h_index_genes[0]} ' \
-                  f'-pelf {" ".join(paths_h_ggis[1:])} -pigf {" ".join(paths_h_index_genes[1:])} -cf {path_clusters}'
+        command = f'{hotnet_proc_hierarchies} -oelf {paths_h_ggis[0]} -oigf {paths_h_index_genes[0]} ' \
+                  f'-pelf {" ".join(paths_h_ggis[1:])} -pigf {" ".join(paths_h_index_genes[1:])} -cf ../../{path_clusters}'
         subprocess.call(command, shell=True)
 
         # Read the results.

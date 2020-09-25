@@ -17,7 +17,7 @@ class TestRunner(object):
         self.phenotypes = {sel: utils.load_phenotypes(sel) for sel in self.condition_selectors}
         self.pathways = {sel: utils.get_pathways(sel) for sel in self.condition_selectors}
         self.expression_data = {sel: utils.load_expression_data(sel) for sel in self.condition_selectors}
-        self.gene_scores = {sel: utils.compute_gene_scores(self.expression_data[sel], self.phenotypes[sel]) for sel in self.condition_selectors}
+        self.gene_scores = {sel: utils.compute_gene_p_values(self.expression_data[sel], self.phenotypes[sel]) for sel in self.condition_selectors}
         self.seed_genes = {sel: utils.extract_seed_genes(self.gene_scores[sel]) for sel in self.condition_selectors}
         self.algorithm_wrappers = {sel: utils.get_algorithm_wrapper(sel) for sel in self.algorithm_selector}
         self.network_generator_names = []

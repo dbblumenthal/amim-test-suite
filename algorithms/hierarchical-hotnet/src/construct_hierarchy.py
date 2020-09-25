@@ -51,6 +51,9 @@ def run(args):
     S, common_index_to_gene, common_gene_to_index = combined_similarity_matrix(P, gene_to_index, gene_to_score)
 
     # If the digraph associated with S is not strongly connected, then restrict to a largest strongly connected component.
+    # Process data.
+    if args.verbose:
+        print('Computing SCCs...')
     components = strongly_connected_components(S)
     if len(components)>1:
         component = sorted(max(components, key=len))

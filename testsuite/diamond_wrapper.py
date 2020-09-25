@@ -38,9 +38,9 @@ class DIAMOnDWrapper(AlgorithmWrapper):
         AlgorithmWrapper.save_array(seed_genes, path_seeds, '\n', None)
 
         # Run DIAMOnD.
-        diamond = '../algorithms/diamond/DIAMOnD.py'
+        diamond = 'cd ../algorithms/diamond/; python DIAMOnD.py'
         path_output = '../temp/diamond_results.txt'
-        command = f'python {diamond} {path_ggi} {path_seeds} 200 1 {path_output}'
+        command = f'{diamond} ../{path_ggi} ../{path_seeds} 200 1 ../{path_output}'
         subprocess.call(command, shell=True)
 
         # Read the results.
@@ -50,7 +50,7 @@ class DIAMOnDWrapper(AlgorithmWrapper):
                 result_genes.append(line.strip())
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/diamond_*')
+        subprocess.call('rm ../temp/diamond_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

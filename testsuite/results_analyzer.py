@@ -1,6 +1,6 @@
 import testsuite.utils as utils
 import pandas as pd
-import scipy as sp
+import scipy.stats as sps
 import numpy as np
 import argparse
 
@@ -70,9 +70,9 @@ class ResultsAnalyzer(object):
         self.means_num_seed_genes.append(np.mean(original['num_seed_genes']))
         self.deltas_mean_lcc_ratios.append(np.mean(original['lcc_ratio']) - np.mean(randomized['lcc_ratio']))
         self.deltas_mean_shortest_distances.append(np.mean(original['mean_shortest_distance']) - np.mean(randomized['mean_shortest_distance']))
-        p_value_mi = sp.stats.mannwhitneyu(original['mean_mutual_information'], randomized['mean_mutual_information'],
+        p_value_mi = sps.mannwhitneyu(original['mean_mutual_information'], randomized['mean_mutual_information'],
                                            alternative='greater')[1]
-        p_value_gsea = sp.stats.mannwhitneyu(original['neg_log_gsea_p_value'], randomized['neg_log_gsea_p_value'],
+        p_value_gsea = sps.mannwhitneyu(original['neg_log_gsea_p_value'], randomized['neg_log_gsea_p_value'],
                                              alternative='greater')[1]
         self.p_values_mi.append(p_value_mi)
         self.p_values_gsea.append(p_value_gsea)
