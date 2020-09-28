@@ -51,7 +51,8 @@ class KPMWrapper(AlgorithmWrapper):
         #    result_genes = [line for line in results if not line.startswith('#')][0].strip().split('\t')[-1].split(' ')
 
         # Delete temporary data.
-        # subprocess.call('rm ../temp/pinnaclez_*', shell=True)
+        # subprocess.call('rm ../temp/kpm_*', shell=True)
 
         # Return the results.
+        result_genes = []
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

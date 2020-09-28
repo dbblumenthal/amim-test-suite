@@ -42,7 +42,7 @@ class DIAMOnDWrapper(AlgorithmWrapper):
         # Run DIAMOnD.
         diamond = 'cd ../algorithms/diamond/; python DIAMOnD.py'
         path_output = '../temp/diamond_results.txt'
-        command = f'{diamond} ../{path_ggi} ../{path_seeds} 200 1 ../{path_output}'
+        command = f'{diamond} ../{path_ggi} ../{path_seeds} 20 1 ../{path_output}'
         subprocess.call(command, shell=True)
 
         # Read the results.

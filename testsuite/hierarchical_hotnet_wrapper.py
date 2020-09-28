@@ -5,7 +5,7 @@ import subprocess
 
 class HierarchicalHotNetWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
         """Runs the algorithm.
 
         Parameters
@@ -20,6 +20,8 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
             Seed genes (entries are gene IDs).
         gene_scores : dict of str: float
             Scores for all genes (keys are gene IDs).
+        indicator_matrix : pd.DataFrame
+            Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
 
         Returns
         -------
@@ -52,6 +54,8 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
                     gene_score_file.write(f'{gene_id}\t{gene_scores[gene_id]}\n')
 
         # Run Hierarchical HotNet.
+        # hotnet_compile = 'cd ../algorithms/hierarchical-hotnet/src/; f2py -c fortran_module.f95 -m fortran_module > /dev/null'
+        # subprocess.call(hotnet_compile, shell=True)
         hotnet_sim_matrix = 'cd ../algorithms/hierarchical-hotnet/src/; python construct_similarity_matrix.py'
         hotnet_find_bins = 'cd ../algorithms/hierarchical-hotnet/src/; python find_permutation_bins.py'
         hotnet_permute = 'cd ../algorithms/hierarchical-hotnet/src/; python permute_scores.py'

@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.KPM]
+    return [utils.AlgorithmSelector.HOTNET]
     # return list(utils.AlgorithmSelector)
 
 
@@ -16,7 +16,7 @@ def ggi_networks():
 
 
 def conditions():
-    return [utils.ConditionSelector.UC]
+    return [utils.ConditionSelector.CD]
     # return list(utils.ConditionSelector)
 
 
