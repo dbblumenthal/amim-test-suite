@@ -55,7 +55,7 @@ class AlgorithmWrapper(object):
                 edge_list_file.write(f'{gene_ids[u]}{sep}{gene_ids[v]}\n')
 
     @staticmethod
-    def save_array(array, path_to_array, sep, header):
+    def save_array(array, path_to_array, sep, header, write_index = False):
         """Saves an array in a text-file.
 
         Parameters
@@ -68,12 +68,19 @@ class AlgorithmWrapper(object):
             Separator for the values in the array.
         header : str or None
             If not None, a header is written to the output file.
+        write_index : bool
+            If True, the samples indices are written to the output file.
         """
         with open(path_to_array, 'w') as array_file:
             if header is not None:
                 array_file.write(f'{header}{sep}')
+            index = 0
             for value in array:
-                array_file.write(f'{value}{sep}')
+                if write_index:
+                    array_file.write(f'{index} {value}{sep}')
+                else:
+                    array_file.write(f'{value}{sep}')
+                index += 1
 
     @staticmethod
     def mean_degree(ggi_network, result_genes):

@@ -1,7 +1,0 @@
-STEP1: Generate FGS nodes. There are two options (a) AVDk (b) SAE algorithms. Please refer to the sample script step1.R to learn how to use this algorithms. 
-
-STEP2: Simulate expression data. There are two options (a) varying variance (b) varying mean. Please see step2.R for details on how it works
-
-STEP3: Compute pathways. step3.R shows how to use the 7 seven tools used in this study. With parameter optimization for each tool. 
-
-STEP4: Parse pathways. step4.R can parse the results from each tool and throws a matrix with evaluation measure i.e Fmeasure

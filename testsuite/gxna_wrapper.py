@@ -35,16 +35,11 @@ class GXNAWrapper(AlgorithmWrapper):
 
         # Write the expression data in the format required by GXNA.
         path_expr = '../temp/gxna_expression.txt'
-        gene_ids = list(expression_data.columns)
-        with open(path_expr, 'w') as expression_data_file:
-            for gene_id in gene_ids:
-                expression_data_file.write(gene_id)
-                for sample_id in range(expression_data.shape[0]):
-                    expression_data_file.write(f' {expression_data.loc[sample_id, gene_id]}')
-                expression_data_file.write('\n')
+        expression_data.to_csv(path_expr, sep=' ', header=False)
 
         # Write the phenotypes in the format required by GXNA.
         path_phen = '../temp/gxna_phenotypes.txt'
+        gene_ids = list(expression_data.columns)
         AlgorithmWrapper.save_array(phenotypes, path_phen, ' ', None)
 
         # Write the mapping file in the format required by GXNA.

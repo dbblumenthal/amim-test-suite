@@ -8,6 +8,8 @@ from testsuite.hierarchical_hotnet_wrapper import HierarchicalHotNetWrapper
 from testsuite.clustex2_wrapper import ClustEx2Wrapper
 from testsuite.diamond_wrapper import DIAMOnDWrapper
 from testsuite.gxna_wrapper import GXNAWrapper
+from testsuite.pinnaclez_wrapper import PinnacleZWrapper
+from testsuite.giga_wrapper import GiGAWrapper
 
 
 # todo: add one member for each condition
@@ -16,6 +18,7 @@ class ConditionSelector(Enum):
     ALS = 'GSE112680'
     LC = 'GSE30219'
     UC = 'GSE75214'
+    CD = 'GSE75214_cd'
     HD = 'GSE3790'
 
     def __str__(self):
@@ -53,6 +56,8 @@ class AlgorithmSelector(Enum):
     GXNA = 'GXNA'
     CLUSTEX2 = 'CLUSTEX2'
     HOTNET = 'HOTNET'
+    PINNACLEZ = 'PINNACLEZ'
+    GIGA = 'GIGA'
 
     def __str__(self):
         return self.value
@@ -94,7 +99,7 @@ def load_phenotypes(condition_selector):
     phenotypes : phenotypes : np.array, shape (n_samples,)
         Phenotype data (indices are sample IDs).
     """
-    return np.load(f'../data/conditions/{str(condition_selector)}/phenotypes.npy')
+    return np.load(f'../data/expression/{str(condition_selector)}/phenotype.npy')
 
 
 def load_expression_data(condition_selector):
@@ -110,7 +115,7 @@ def load_expression_data(condition_selector):
     expression_data : pd.DataFrame
         Expression data (indices are sample IDs, column names are gene IDs).
     """
-    return pd.read_csv(f'../data/conditions/{str(condition_selector)}/expression_data.csv.zip', index_col=0)
+    return pd.read_csv(f'../data/expression/{str(condition_selector)}/expr_small.csv.zip', index_col=0)
 
 
 def get_pathways(condition_selector):
@@ -134,6 +139,8 @@ def get_pathways(condition_selector):
         return ['hsa04060', 'hsa04630', 'hsa05321']
     elif condition_selector == ConditionSelector.HD:
         return ['hsa05016']
+    elif condition_selector == ConditionSelector.CD:
+        return [] # todo add pathways for Chron's disease
 
 
 # todo: add cases for missing wrappers
@@ -153,6 +160,10 @@ def get_algorithm_wrapper(algorithm_selector):
         return DIAMOnDWrapper()
     elif algorithm_selector == AlgorithmSelector.HOTNET:
         return HierarchicalHotNetWrapper()
+    elif algorithm_selector == AlgorithmSelector.PINNACLEZ:
+        return PinnacleZWrapper()
+    elif algorithm_selector == AlgorithmSelector.GIGA:
+        return GiGAWrapper()
 
 
 # todo: implement this method
@@ -192,12 +203,12 @@ def extract_seed_genes(gene_p_values):
     seed_genes : list of str
             List of genes with p-value < 0.001.
     """
-    threshold = 0.001
+    threshold = 0.001 / len(gene_p_values)
     return [gene for gene, p_value in gene_p_values.items() if p_value < threshold]
 
 
-def compute_sample_gene_p_values(expression_data):
-    """Transforms the expression data to p-values.
+def compute_indicator_matrix(expression_data):
+    """Transforms the expression data to an indicator matrix.
 
         Parameters
         ----------
@@ -206,13 +217,12 @@ def compute_sample_gene_p_values(expression_data):
 
         Returns
         -------
-        sample_gene_p_values : pd.DataFrame
-            Expression data transformed to p-values assuming normality.
+        indicator_matrix : pd.DataFrame
+            Indicator matrix obtained from expression data.
         """
-    sample_gene_p_values = expression_data.copy()
-    sample_gene_p_values = 2.0 * sps.norm.sf(np.fabs(sample_gene_p_values))
-    sample_gene_p_values = pd.DataFrame(data=sample_gene_p_values, columns=expression_data.columns)
-    return sample_gene_p_values
+    means = np.mean(expression_data)
+    stds = np.std(expression_data)
+    return (np.fabs(expression_data - means) > 3 * stds) * 1
 
 
 def compute_seed_statistics(ggi_network, seed_genes):
