@@ -75,7 +75,7 @@ def load_ggi_network(ggi_network_selector, expression_data):
     """
     ggi_network = nx.read_graphml(f'../data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
-    selected_genes = set(expression_data.columns)
+    selected_genes = set([str(x) for x in expression_data.columns])
     selected_nodes = [node for node in ggi_network.nodes() if gene_ids[node] in selected_genes]
     ggi_network = ggi_network.subgraph(selected_nodes).copy()
     return nx.convert_node_labels_to_integers(ggi_network)
