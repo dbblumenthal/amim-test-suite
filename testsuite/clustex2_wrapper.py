@@ -33,13 +33,13 @@ class ClustEx2Wrapper(AlgorithmWrapper):
         path_to_network = '../temp/clustex2_ggi.txt'
         AlgorithmWrapper.save_network_as_edge_list(ggi_network, path_to_network, '\t', 'source\ttarget')
 
-        # Write seed genes in format required by DIAMOnD.
+        # Write seed genes in format required by ClustEx2.
         path_to_seeds = '../temp/clustex2_seed_genes.txt'
         AlgorithmWrapper.save_array(seed_genes, path_to_seeds, '\n', 'gene')
 
         # Run ClustEx2.
-        clustex2 = '../algorithms/clustex2/clustex2'
-        command = f'{clustex2} --gene_list {path_to_seeds} --network {path_to_network} -D -G -C -s 100 -j clustex2'
+        clustex2 = 'cd ../algorithms/clustex2/; ./clustex2'
+        command = f'{clustex2} --gene_list ../{path_to_seeds} --network ../{path_to_network} -D -G -C -s 100 -j clustex2'
         subprocess.call(command, shell=True)
 
         # Read the results.
@@ -50,8 +50,8 @@ class ClustEx2Wrapper(AlgorithmWrapper):
                 result_genes.append(line.strip())
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/clustex2_*')
-        subprocess.call('rm ../algorithms/clustex2/clustex2_*')
+        subprocess.call('rm ../temp/clustex2_*', shell=True)
+        subprocess.call('rm ../algorithms/clustex2/clustex2_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)
