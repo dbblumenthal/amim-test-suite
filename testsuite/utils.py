@@ -10,6 +10,7 @@ from testsuite.diamond_wrapper import DIAMOnDWrapper
 from testsuite.gxna_wrapper import GXNAWrapper
 from testsuite.pinnaclez_wrapper import PinnacleZWrapper
 from testsuite.giga_wrapper import GiGAWrapper
+from testsuite.kpm_wrapper import KPMWrapper
 
 
 # todo: add one member for each condition
@@ -58,6 +59,7 @@ class AlgorithmSelector(Enum):
     HOTNET = 'HOTNET'
     PINNACLEZ = 'PINNACLEZ'
     GIGA = 'GIGA'
+    KPM = 'KPM'
 
     def __str__(self):
         return self.value
@@ -99,7 +101,7 @@ def load_phenotypes(condition_selector):
     phenotypes : phenotypes : np.array, shape (n_samples,)
         Phenotype data (indices are sample IDs).
     """
-    return np.load(f'../data/expression/{str(condition_selector)}/phenotype.npy')
+    return np.load(f'../data/conditions/{str(condition_selector)}/phenotype.npy')
 
 
 def load_expression_data(condition_selector):
@@ -115,7 +117,10 @@ def load_expression_data(condition_selector):
     expression_data : pd.DataFrame
         Expression data (indices are sample IDs, column names are gene IDs).
     """
-    return pd.read_csv(f'../data/expression/{str(condition_selector)}/expr_small.csv.zip', index_col=0)
+    expression_data = pd.read_csv(f'../data/expression/{str(condition_selector)}/expr.csv.zip', index_col=0)
+    new_index = list(range(len(expression_data.index)))
+    expression_data.index = new_index
+    return expression_data
 
 
 def get_pathways(condition_selector):
@@ -164,6 +169,8 @@ def get_algorithm_wrapper(algorithm_selector):
         return PinnacleZWrapper()
     elif algorithm_selector == AlgorithmSelector.GIGA:
         return GiGAWrapper()
+    elif algorithm_selector == AlgorithmSelector.KPM:
+        return KPMWrapper()
 
 
 # todo: implement this method
@@ -222,7 +229,7 @@ def compute_indicator_matrix(expression_data):
         """
     means = np.mean(expression_data)
     stds = np.std(expression_data)
-    return (np.fabs(expression_data - means) > 3 * stds) * 1
+    return (np.fabs(expression_data - means) > 2 * stds) * 1
 
 
 def compute_seed_statistics(ggi_network, seed_genes):

@@ -5,7 +5,7 @@ import subprocess
 
 class DIAMOnDWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
         """Runs the algorithm.
 
         Parameters
@@ -20,6 +20,8 @@ class DIAMOnDWrapper(AlgorithmWrapper):
             Seed genes (entries are gene IDs).
         gene_scores : dict of str: float
             Scores for all genes (keys are gene IDs).
+        indicator_matrix : pd.DataFrame
+            Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
 
         Returns
         -------
@@ -40,7 +42,7 @@ class DIAMOnDWrapper(AlgorithmWrapper):
         # Run DIAMOnD.
         diamond = 'cd ../algorithms/diamond/; python DIAMOnD.py'
         path_output = '../temp/diamond_results.txt'
-        command = f'{diamond} ../{path_ggi} ../{path_seeds} 200 1 ../{path_output}'
+        command = f'{diamond} ../{path_ggi} ../{path_seeds} 20 1 ../{path_output}'
         subprocess.call(command, shell=True)
 
         # Read the results.
