@@ -18,6 +18,7 @@ class ConditionSelector(Enum):
     ALS = 'GSE112680'
     LC = 'GSE30219'
     UC = 'GSE75214'
+    CD = 'GSE75214_cd'
     HD = 'GSE3790'
 
     def __str__(self):
@@ -98,7 +99,7 @@ def load_phenotypes(condition_selector):
     phenotypes : phenotypes : np.array, shape (n_samples,)
         Phenotype data (indices are sample IDs).
     """
-    return np.load(f'../data/conditions/{str(condition_selector)}/phenotypes.npy')
+    return np.load(f'../data/expression/{str(condition_selector)}/phenotype.npy')
 
 
 def load_expression_data(condition_selector):
@@ -114,7 +115,7 @@ def load_expression_data(condition_selector):
     expression_data : pd.DataFrame
         Expression data (indices are sample IDs, column names are gene IDs).
     """
-    return pd.read_csv(f'../data/conditions/{str(condition_selector)}/expression_data.csv.zip', index_col=0)
+    return pd.read_csv(f'../data/expression/{str(condition_selector)}/expr_small.csv.zip', index_col=0)
 
 
 def get_pathways(condition_selector):
@@ -138,6 +139,8 @@ def get_pathways(condition_selector):
         return ['hsa04060', 'hsa04630', 'hsa05321']
     elif condition_selector == ConditionSelector.HD:
         return ['hsa05016']
+    elif condition_selector == ConditionSelector.CD:
+        return [] # todo add pathways for Chron's disease
 
 
 # todo: add cases for missing wrappers

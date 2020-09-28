@@ -74,7 +74,7 @@ def combined_similarity_matrix(P, gene_to_index, gene_to_score):
     if m!=n:
         raise IndexError('The similarity matrix is not square.')
     if max_index-min_index+1!=n:
-        raise IndexError('The similarity matrix and the index-gene associations have different dimensions.')
+        raise IndexError(f'The similarity matrix and the index-gene associations have different dimensions. n = {n}, max_index - min_index + 1 = {max_index-min_index+1}')
 
     topology_genes = set(gene_to_index)
     score_genes = set(gene_to_score)

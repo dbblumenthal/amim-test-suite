@@ -31,9 +31,14 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
 
         # Write GGI network in format required by Hierarchical HotNet.
         path_ggi = '../temp/hotnet_ggi.tsv'
+        is_isolated = {node: True for node in ggi_network.nodes()}
         with open(path_ggi, 'w') as network_file:
             for u, v in ggi_network.edges():
-                network_file.write(f'{u + 1}\t{v + 1}\n')
+                network_file.write(f'{u}\t{v}\n')
+                is_isolated[u] = False
+                is_isolated[v] = False
+        first_not_isolated = min([node for node in ggi_network.nodes() if not is_isolated[node]])
+        last_not_isolated = max([node for node in ggi_network.nodes() if not is_isolated[node]])
 
         # Write index to gene file and gene score file in format required by Hierarchical HotNet.
         path_index_gene = '../temp/hotnet_index_gene.tsv'
@@ -41,15 +46,18 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
         with open(path_index_gene, 'w') as index_gene_file, open(path_scores, 'w') as gene_score_file:
             gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
             for node in ggi_network.nodes():
-                gene_id = gene_ids[node]
-                index_gene_file.write(f'{node + 1}\t{gene_id}\n')
-                gene_score_file.write(f'{gene_id}\t{gene_scores[gene_id]}\n')
+                if first_not_isolated <= node <= last_not_isolated:
+                    gene_id = gene_ids[node]
+                    index_gene_file.write(f'{node}\t{gene_id}\n')
+                    gene_score_file.write(f'{gene_id}\t{gene_scores[gene_id]}\n')
 
         # Run Hierarchical HotNet.
         hotnet_sim_matrix = 'cd ../algorithms/hierarchical-hotnet/src/; python construct_similarity_matrix.py'
         hotnet_find_bins = 'cd ../algorithms/hierarchical-hotnet/src/; python find_permutation_bins.py'
         hotnet_permute = 'cd ../algorithms/hierarchical-hotnet/src/; python permute_scores.py'
         hotnet_constr_hierarchy = 'cd ../algorithms/hierarchical-hotnet/src/; python construct_hierarchy.py'
+        hotnet_constr_hierarchy_parallel = 'cd ../algorithms/hierarchical-hotnet/src/; ' \
+                                           'parallel -u -j 10 --bar python construct_hierarchy.py'
         hotnet_proc_hierarchies = 'cd ../algorithms/hierarchical-hotnet/src/; python process_hierarchies.py'
         path_sim_matrix = '../../../temp/hotnet_similarity_matrix.h5'
         command = f'{hotnet_sim_matrix} -i ../../{path_ggi} -o {path_sim_matrix}'
@@ -64,10 +72,17 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
             subprocess.call(command, shell=True)
         paths_h_ggis = [f'../../../temp/hotnet_ggi_{i}.tsv' for i in range(num_perms + 1)]
         paths_h_index_genes = [f'../../../temp/hotnet_index_gene_{i}.tsv' for i in range(num_perms + 1)]
-        for i in range(num_perms + 1):
-            command = f'{hotnet_constr_hierarchy} -smf {path_sim_matrix} -igf ../../{path_index_gene} ' \
-                      f'-gsf ../../{paths_scores[i]} -helf {paths_h_ggis[i]} -higf {paths_h_index_genes[i]}'
-            subprocess.call(command, shell=True)
+        paths_scores_template = '../../../temp/hotnet_gene_scores_{}.tsv'
+        paths_h_ggis_template = '../../../temp/hotnet_ggi_{}.tsv'
+        paths_h_index_genes_template = '../../../temp/hotnet_index_gene_{}.tsv'
+        command = f'{hotnet_constr_hierarchy_parallel} -smf {path_sim_matrix} -igf ../../{path_index_gene} ' \
+                  f'-gsf {paths_scores_template} -helf {paths_h_ggis_template} -higf {paths_h_index_genes_template} ' \
+                  f'::: {" ".join([str(i) for i in range(num_perms + 1)])}'
+        subprocess.call(command, shell=True)
+        # for i in range(num_perms + 1):
+        #     command = f'{hotnet_constr_hierarchy} -smf {path_sim_matrix} -igf ../../{path_index_gene} ' \
+        #               f'-gsf ../../{paths_scores[i]} -helf {paths_h_ggis[i]} -higf {paths_h_index_genes[i]}'
+        #     subprocess.call(command, shell=True)
         path_clusters = '../temp/hotnet_clusters.tsv'
         command = f'{hotnet_proc_hierarchies} -oelf {paths_h_ggis[0]} -oigf {paths_h_index_genes[0]} ' \
                   f'-pelf {" ".join(paths_h_ggis[1:])} -pigf {" ".join(paths_h_index_genes[1:])} -cf ../../{path_clusters}'
@@ -76,6 +91,9 @@ class HierarchicalHotNetWrapper(AlgorithmWrapper):
         # Read the results.
         with open(path_clusters, 'r') as hotnet_results:
             result_genes = [line for line in hotnet_results if not line.startswith('#')][0].strip().split('\t')
+
+        # Delete temporary data.
+        subprocess.call('rm ../temp/hotnet_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)
