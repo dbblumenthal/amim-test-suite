@@ -78,7 +78,7 @@ def load_ggi_network(ggi_network_selector, expression_data):
     ggi_network : nx.Graph
         The selected GGI network as a networkx graph without genes not contained in the expression data.
     """
-    ggi_network = nx.read_graphml(f'../data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
+    ggi_network = nx.read_graphml(f'data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
     selected_genes = set([str(x) for x in expression_data.columns])
     selected_nodes = [node for node in ggi_network.nodes() if gene_ids[node] in selected_genes]
@@ -140,7 +140,7 @@ def get_pathways(condition_selector):
     elif condition_selector == ConditionSelector.HD:
         return ['hsa05016']
     elif condition_selector == ConditionSelector.CD:
-        return [] # todo add pathways for Chron's disease
+        return ['hsa04621', 'hsa04060', 'hsa04630', 'hsa05321', 'hsa04140']
 
 
 # todo: add cases for missing wrappers
