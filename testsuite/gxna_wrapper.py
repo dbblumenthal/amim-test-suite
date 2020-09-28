@@ -5,7 +5,7 @@ import subprocess
 
 class GXNAWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
         """Runs the algorithm.
 
         Parameters
@@ -20,6 +20,8 @@ class GXNAWrapper(AlgorithmWrapper):
             Seed genes (entries are gene IDs).
         gene_scores : dict of str: float
             Scores for all genes (keys are gene IDs).
+        indicator_matrix : pd.DataFrame
+            Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
 
         Returns
         -------

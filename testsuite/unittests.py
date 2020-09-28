@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.HOTNET]
+    return [utils.AlgorithmSelector.KPM]
     # return list(utils.AlgorithmSelector)
 
 
@@ -36,10 +36,12 @@ def load_data(ggi_network_selector, condition_selector, network_generator_select
     gene_scores = utils.compute_gene_p_values(expression_data, phenotypes)
     print('\tutils.extract_seed_genes() ...')
     seed_genes = utils.extract_seed_genes(gene_scores)
+    print('\tutils.compute_indicator_matrix() ...')
+    indicator_matrix = utils.compute_indicator_matrix(expression_data)
     if network_generator_selector != utils.NetworkGeneratorSelector.ORIGINAL:
         print('\tgenerators.generate_network() ...')
         ggi_network = generators.generate_network(ggi_network, None, network_generator_selector)
-    return ggi_network, expression_data, phenotypes, seed_genes, gene_scores
+    return ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix
 
 
 def run_algorithm(algorithm_wrapper, data):

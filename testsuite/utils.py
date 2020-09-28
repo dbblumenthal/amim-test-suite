@@ -10,6 +10,7 @@ from testsuite.diamond_wrapper import DIAMOnDWrapper
 from testsuite.gxna_wrapper import GXNAWrapper
 from testsuite.pinnaclez_wrapper import PinnacleZWrapper
 from testsuite.giga_wrapper import GiGAWrapper
+from testsuite.kpm_wrapper import KPMWrapper
 
 
 # todo: add one member for each condition
@@ -58,6 +59,7 @@ class AlgorithmSelector(Enum):
     HOTNET = 'HOTNET'
     PINNACLEZ = 'PINNACLEZ'
     GIGA = 'GIGA'
+    KPM = 'KPM'
 
     def __str__(self):
         return self.value
@@ -164,6 +166,8 @@ def get_algorithm_wrapper(algorithm_selector):
         return PinnacleZWrapper()
     elif algorithm_selector == AlgorithmSelector.GIGA:
         return GiGAWrapper()
+    elif algorithm_selector == AlgorithmSelector.KPM:
+        return KPMWrapper()
 
 
 # todo: implement this method
@@ -222,7 +226,7 @@ def compute_indicator_matrix(expression_data):
         """
     means = np.mean(expression_data)
     stds = np.std(expression_data)
-    return (np.fabs(expression_data - means) > 3 * stds) * 1
+    return (np.fabs(expression_data - means) > 1 * stds) * 1
 
 
 def compute_seed_statistics(ggi_network, seed_genes):
