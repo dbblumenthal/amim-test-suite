@@ -196,4 +196,4 @@ class TestRunner(object):
         filename : str
             Name of the CSV file to which the results should be written.
         """
-        self.results.to_csv(self.outfile)
+        self.results.to_csv(self.outfile, index=False)
