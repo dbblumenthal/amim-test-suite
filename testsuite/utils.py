@@ -11,6 +11,7 @@ from testsuite.gxna_wrapper import GXNAWrapper
 from testsuite.pinnaclez_wrapper import PinnacleZWrapper
 from testsuite.giga_wrapper import GiGAWrapper
 from testsuite.kpm_wrapper import KPMWrapper
+from testsuite.grandforest_wrapper import GrandForestWrapper
 
 
 # todo: add one member for each condition
@@ -60,6 +61,7 @@ class AlgorithmSelector(Enum):
     PINNACLEZ = 'PINNACLEZ'
     GIGA = 'GIGA'
     KPM = 'KPM'
+    GF = 'GF'
 
     def __str__(self):
         return self.value
@@ -80,7 +82,7 @@ def load_ggi_network(ggi_network_selector, expression_data):
     ggi_network : nx.Graph
         The selected GGI network as a networkx graph without genes not contained in the expression data.
     """
-    ggi_network = nx.read_graphml(f'data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
+    ggi_network = nx.read_graphml(f'../data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
     selected_genes = set([str(x) for x in expression_data.columns])
     selected_nodes = [node for node in ggi_network.nodes() if gene_ids[node] in selected_genes]
@@ -171,6 +173,8 @@ def get_algorithm_wrapper(algorithm_selector):
         return GiGAWrapper()
     elif algorithm_selector == AlgorithmSelector.KPM:
         return KPMWrapper()
+    elif algorithm_selector == AlgorithmSelector.GF:
+        return GrandForestWrapper()
 
 
 # todo: implement this method

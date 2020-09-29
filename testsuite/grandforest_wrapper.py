@@ -2,12 +2,11 @@ from testsuite.algorithm_wrapper import AlgorithmWrapper
 import networkx as nx
 import subprocess
 import pandas as pd
-from testsuite.utils import load_ggi_network
-import numpy as np
 
-class ClustEx2Wrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes):
+class GrandForestWrapper(AlgorithmWrapper):
+
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
         """Runs the algorithm.
 
         Parameters
@@ -18,6 +17,12 @@ class ClustEx2Wrapper(AlgorithmWrapper):
             Expression data (indices are sample IDs, column names are gene IDs).
         phenotypes : np.array, shape (n_samples,)
             Phenotype data (indices are sample IDs).
+        seed_genes : list of str
+            Seed genes (entries are gene IDs).
+        gene_scores : dict of str: float
+            Scores for all genes (keys are gene IDs).
+        indicator_matrix : pd.DataFrame
+            Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
 
         Returns
         -------
@@ -33,18 +38,17 @@ class ClustEx2Wrapper(AlgorithmWrapper):
 
         gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
         ppi_genes = list(gene_ids.values())
-        ppi_genes = [int(x) for x in ppi_genes]
-        expression_data = expression_data[ppi_genes]
+        # ppi_genes = [int(x) for x in ppi_genes]
+        # expression_data = expression_data[ppi_genes]
         expression_data["phenotype"] = phenotypes
 
-        expression_data.to_csv('temp/gf_expr.txt', index = False)
-
-
+        expression_data.to_csv('../temp/gf_expr.txt', index = False)
 
         AlgorithmWrapper.save_network_as_edge_list(ggi_network, path_to_network, '\t', 'source\ttarget')
 
         # Run GF
-        subprocess.call ('Rscript ../algorithms/grand_forest/grandforest.R',shell = True, stdout=subprocess.PIPE)
+        grandforest = 'cd ../algorithms/grand_forest/; Rscript grandforest.R'
+        subprocess.call(grandforest, shell = True, stdout=subprocess.PIPE)
 
         # Read the results.
         result_genes = []
@@ -54,7 +58,7 @@ class ClustEx2Wrapper(AlgorithmWrapper):
                 result_genes.append(line.strip())
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/gf_*',shell = True)
+        subprocess.call('rm ../temp/gf_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

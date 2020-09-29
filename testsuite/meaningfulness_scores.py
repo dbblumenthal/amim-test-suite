@@ -5,7 +5,6 @@ import mygene
 import subprocess
 
 
-
 def compute_mean_mutual_information(expression_data, phenotypes, result_genes):
     """Computes mean mutual information between expression of selected genes and the phenotypes.
 
@@ -25,8 +24,6 @@ def compute_mean_mutual_information(expression_data, phenotypes, result_genes):
     """
     mutual_information = skf.mutual_info_classif(expression_data.loc[:, result_genes], phenotypes, discrete_features=False)
     return np.mean(mutual_information)
-
-
 
 
 def compute_neg_log_gsea_p_value(pathways, result_genes):
@@ -54,9 +51,8 @@ def compute_neg_log_gsea_p_value(pathways, result_genes):
         except KeyError:
             pass
 
-
     res = gseapy.enrichr(gene_list=gene_names, description='pathway', gene_sets='KEGG_2016', cutoff=0.05,
-                         outdir="../temp/enrichment", organism='Human', no_plot=True)
+                         outdir="../temp/enrichment", no_plot=True)
     full_results = res.results
     p_values = []
     for tup in full_results.itertuples():

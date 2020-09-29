@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.HOTNET]
+    return [utils.AlgorithmSelector.GF]
     # return list(utils.AlgorithmSelector)
 
 
@@ -44,12 +44,14 @@ def load_data(ggi_network_selector, condition_selector, network_generator_select
     return ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix
 
 
-def run_algorithm(algorithm_wrapper, data):
+def run_algorithm(algorithm_wrapper, data, pathways):
     print('\talgorithm_wrapper.run_algorithm() ...')
     result_genes, mean_degree = algorithm_wrapper.run_algorithm(*data)
     print('\tscores.compute_mean_mutual_information() ...')
     mean_mutual_information = scores.compute_mean_mutual_information(data[1], data[2], result_genes)
-    print(f'\tmean_degree = {mean_degree}, mean_mutual_information = {mean_mutual_information}')
+    neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
+    print(f'\tmean_degree = {mean_degree}, mean_mutual_information = {mean_mutual_information}, '
+          f'neg_log_gsea_p_value = {neg_log_gsea_p_value}')
 
 
 @pytest.mark.parametrize(
@@ -61,4 +63,5 @@ def test_algorithm(algorithm_selector, ggi_network_selector, condition_selector,
     data = load_data(ggi_network_selector, condition_selector, network_generator_selector)
     print('\tutils.get_algorithm_wrapper() ...')
     algorithm_wrapper = utils.get_algorithm_wrapper(algorithm_selector)
-    run_algorithm(algorithm_wrapper, data)
+    pathways = utils.get_pathways(condition_selector)
+    run_algorithm(algorithm_wrapper, data, pathways)
