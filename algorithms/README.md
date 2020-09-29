@@ -36,3 +36,12 @@ cd gxna
 - Ghiassian SD, Menche J, Barabási AL   (2015)     A DIseAse MOdule Detection (DIAMOnD) Algorithm Derived from a  Systematic Analysis of Connectivity Patterns of Disease Proteins in the  Human Interactome. PLOS Computational Biology  11(4): e1004120. https://doi.org/10.1371/journal.pcbi.1004120
 
 Distributed as Python script, no compilation necessary.
+
+## Grand Forest and COSINE
+
+install.packages(c("data.table", "tidyverse", "devtools", "COSINE", "tidyr"))
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install("simpIntLists")
+devtools::install_github("SimonLarsen/grandforest")
