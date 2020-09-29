@@ -47,7 +47,7 @@ class KPMWrapper(AlgorithmWrapper):
         kpm = f'cd ../algorithms/kpm/; java -jar keypathwayminer-standalone-5.0.jar -strategy=INES -algo=GREEDY -L1={num_case_exceptions} -K=2 -maxSolutions=1'
         output_dir = '../temp/kpm/'
         command = f'{kpm} -matrix1=../{path_indicator_matrix} -graphFile=../{path_ggi} -resultsDir=../{output_dir}'
-        subprocess.call(command, shell=True)
+        subprocess.call(command, shell=True, stdout=subprocess.PIPE)
 
         # Read the results.
         path_output = None

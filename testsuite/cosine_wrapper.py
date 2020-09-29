@@ -2,14 +2,10 @@ from testsuite.algorithm_wrapper import AlgorithmWrapper
 import networkx as nx
 import subprocess
 import pandas as pd
-from testsuite.utils import load_ggi_network
-import numpy as np
-import os
-os.chdir("algorithms/")
 
-class ClustEx2Wrapper(AlgorithmWrapper):
+class CosineWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
         """Runs the algorithm.
 
         Parameters
@@ -20,6 +16,12 @@ class ClustEx2Wrapper(AlgorithmWrapper):
             Expression data (indices are sample IDs, column names are gene IDs).
         phenotypes : np.array, shape (n_samples,)
             Phenotype data (indices are sample IDs).
+        seed_genes : list of str
+            Seed genes (entries are gene IDs).
+        gene_scores : dict of str: float
+            Scores for all genes (keys are gene IDs).
+        indicator_matrix : pd.DataFrame
+            Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
 
         Returns
         -------

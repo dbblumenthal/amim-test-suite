@@ -45,27 +45,30 @@ def compute_neg_log_gsea_p_value(pathways, result_genes):
     """
     if len(result_genes) == 0:
         return 0.0
-    mg = mygene.MyGeneInfo()
+    try:
+        mg = mygene.MyGeneInfo()
 
-    out = mg.querymany(result_genes, scopes= 'entrezgene', fields='symbol', species='human', verbose=False)
-    gene_names = []
-    for line in out:
-        try:
-            gene_names.append(line["symbol"])
-        except KeyError:
-            pass
+        out = mg.querymany(result_genes, scopes= 'entrezgene', fields='symbol', species='human', verbose=False)
+        gene_names = []
+        for line in out:
+            try:
+                gene_names.append(line["symbol"])
+            except KeyError:
+                pass
 
-    res = gseapy.enrichr(gene_list=gene_names, description='pathway', gene_sets='KEGG_2016', cutoff=0.05,
-                         outdir='../temp/enrichment', no_plot=True)
-    full_results = res.results
-    terms = list(full_results.Term)
-    terms = [x.split(' ')[-1] for x in terms]
-    p_values = []
-    for i in range(len(terms)):
-        if terms[i] in pathways:
-            p_values.append(-np.log10(full_results['Adjusted P-value'][i]))
-    subprocess.call('rm -rf ../temp/enrichment/', shell=True)
-    if len(p_values) > 0:
-        return np.mean(p_values)
-    else:
-        return 0
+        res = gseapy.enrichr(gene_list=gene_names, description='pathway', gene_sets='KEGG_2016', cutoff=0.05,
+                             outdir='../temp/enrichment', no_plot=True)
+        full_results = res.results
+        terms = list(full_results.Term)
+        terms = [x.split(' ')[-1] for x in terms]
+        p_values = []
+        for i in range(len(terms)):
+            if terms[i] in pathways:
+                p_values.append(-np.log10(full_results['Adjusted P-value'][i]))
+        subprocess.call('rm -rf ../temp/enrichment/', shell=True)
+        if len(p_values) > 0:
+            return np.mean(p_values)
+        else:
+            return 0
+    except:
+        return -1

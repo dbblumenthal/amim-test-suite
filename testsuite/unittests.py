@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.KPM]
+    return [utils.AlgorithmSelector.GF]
     # return list(utils.AlgorithmSelector)
 
 

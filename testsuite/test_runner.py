@@ -11,9 +11,10 @@ class TestRunner(object):
 
     def __init__(self):
         """Constructs TestRunner object."""
-        self.ggi_network_selectors = list(utils.GGINetworkSelector)
-        self.condition_selectors = list(utils.ConditionSelector)
-        self.algorithm_selectors = list(utils.AlgorithmSelector)
+        # self.condition_selectors = list(utils.ConditionSelector)
+        self.condition_selectors = [utils.ConditionSelector.CD]
+        # self.algorithm_selectors = list(utils.AlgorithmSelector)
+        self.algorithm_selectors = [utils.AlgorithmSelector.DIAMOND]
         self.phenotypes = {sel: utils.load_phenotypes(sel) for sel in self.condition_selectors}
         self.pathways = {sel: utils.get_pathways(sel) for sel in self.condition_selectors}
         self.expression_data = {sel: utils.load_expression_data(sel) for sel in self.condition_selectors}
@@ -25,7 +26,7 @@ class TestRunner(object):
         self.condition_names = []
         self.algorithm_names = []
         self.random_seeds = []
-        self.nums_seed_genes = []
+        self.nums_genes_seeds = []
         self.lcc_ratios_seeds = []
         self.mean_shortest_distances_seeds = []
         self.mean_degrees_results = []
@@ -70,7 +71,7 @@ class TestRunner(object):
             self.random_seeds.append(seed)
             self.network_generator_names.append(network_generator_name)
             self.condition_names.append(str(condition_selector))
-            self.nums_seed_genes.append(len(seed_genes))
+            self.nums_genes_seeds.append(len(seed_genes))
             self.lcc_ratios_seeds.append(lcc_ratio)
             self.mean_shortest_distances_seeds.append(mean_shortest_distance)
             self.algorithm_names.append(str(algorithm_selector))
@@ -128,7 +129,7 @@ class TestRunner(object):
         self.condition_names = []
         self.algorithm_names = []
         self.random_seeds = []
-        self.nums_seed_genes = []
+        self.nums_genes_seeds = []
         self.lcc_ratios_seeds = []
         self.mean_shortest_distances_seeds = []
         self.mean_degrees_results = []
@@ -152,7 +153,7 @@ class TestRunner(object):
             Print progress to stdout.
         """
         self.clear()
-        self.outfile = f'../results/{str(network_generator_selector)}.csv'
+        self.outfile = f'../results/{str(ggi_network_selector)}_{str(network_generator_selector)}.csv'
         if verbose:
             print(f'GGI network = {str(ggi_network_selector)}')
         for condition_selector in self.condition_selectors:
@@ -167,10 +168,12 @@ class TestRunner(object):
                                      'condition_name': self.condition_names,
                                      'algorithm_name': self.algorithm_names,
                                      'random_seed': self.random_seeds,
-                                     'num_seed_genes': self.nums_seed_genes,
-                                     'lcc_ratio': self.lcc_ratios_seeds,
-                                     'mean_shortest_distance': self.mean_shortest_distances_seeds,
-                                     'mean_degree': self.mean_degrees_results,
+                                     'num_genes_seeds': self.nums_genes_seeds,
+                                     'lcc_ratio_seeds': self.lcc_ratios_seeds,
+                                     'mean_shortest_distance_seeds': self.mean_shortest_distances_seeds,
+                                     'mean_degree_result': self.mean_degrees_results,
+                                     'num_genes_result': self.nums_genes_results,
+                                     'result_genes': self.result_genes,
                                      'mean_mutual_information': self.mean_mutual_informations,
                                      'neg_log_gsea_p_value': self.neg_log_gsea_p_values})
 
@@ -193,18 +196,3 @@ class TestRunner(object):
             Name of the CSV file to which the results should be written.
         """
         self.results.to_csv(self.outfile)
-
-
-def get_parser():
-    parser = argparse.ArgumentParser('tests the one-network-fits-all hypothesis')
-    parser.add_argument('--network', type=utils.GGINetworkSelector, choices=list(utils.GGINetworkSelector), required=True)
-    parser.add_argument('--generator', type=utils.NetworkGeneratorSelector, choices=list(utils.NetworkGeneratorSelector), required=True)
-    parser.add_argument('--verbose', action='store_true', help='print progress to stdout')
-    return parser
-
-
-if __name__ == '__main__':
-    args = get_parser().parse_args()
-    test_runner = TestRunner()
-    test_runner.run_all(args.network, args.num_randomizations, args.verbose)
-    test_runner.save_results()

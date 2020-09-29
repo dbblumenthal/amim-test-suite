@@ -39,9 +39,13 @@ Distributed as Python script, no compilation necessary.
 
 ## Grand Forest and COSINE
 
+```shell script
+sudo R
 install.packages(c("data.table", "tidyverse", "devtools", "COSINE", "tidyr"))
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
-
 BiocManager::install("simpIntLists")
 devtools::install_github("SimonLarsen/grandforest")
+```
+
+Under macOS, the installation of `data.table` will likely fail. Follow the instructions given here: https://github.com/Rdatatable/data.table/wiki/Installation.

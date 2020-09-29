@@ -53,7 +53,7 @@ class GXNAWrapper(AlgorithmWrapper):
         # Run GXNA.
         gxna = 'cd ../algorithms/gxna/; ./gxna'
         command = f'{gxna} -name gxna -phenoFile ../{path_phen} -expFile ../{path_expr} -edgeFile ../{path_ggi} -mapFile ../{path_map}'
-        subprocess.call(command, shell=True)
+        subprocess.call(command, shell=True, stdout=subprocess.PIPE)
 
         # Read the results.
         result_genes = []

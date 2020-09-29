@@ -42,7 +42,7 @@ class ClustEx2Wrapper(AlgorithmWrapper):
         # Run ClustEx2.
         clustex2 = 'cd ../algorithms/clustex2/; ./clustex2'
         command = f'{clustex2} --gene_list ../{path_to_seeds} --network ../{path_to_network} -D -G -C -s 100 -j clustex2'
-        subprocess.call(command, shell=True)
+        subprocess.call(command, shell=True, stdout=subprocess.PIPE)
 
         # Read the results.
         result_genes = []

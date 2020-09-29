@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import scipy.stats as sps
 import itertools as itt
-from testsuite.hierarchical_hotnet_wrapper import HierarchicalHotNetWrapper
 from testsuite.clustex2_wrapper import ClustEx2Wrapper
 from testsuite.diamond_wrapper import DIAMOnDWrapper
 from testsuite.gxna_wrapper import GXNAWrapper
@@ -12,6 +11,7 @@ from testsuite.pinnaclez_wrapper import PinnacleZWrapper
 from testsuite.giga_wrapper import GiGAWrapper
 from testsuite.kpm_wrapper import KPMWrapper
 from testsuite.grandforest_wrapper import GrandForestWrapper
+from testsuite.cosine_wrapper import CosineWrapper
 
 
 # todo: add one member for each condition
@@ -57,11 +57,11 @@ class AlgorithmSelector(Enum):
     DIAMOND = 'DIAMOND'
     GXNA = 'GXNA'
     CLUSTEX2 = 'CLUSTEX2'
-    HOTNET = 'HOTNET'
     PINNACLEZ = 'PINNACLEZ'
     GIGA = 'GIGA'
     KPM = 'KPM'
     GF = 'GF'
+    COSINE = 'COSINE'
 
     def __str__(self):
         return self.value
@@ -165,8 +165,6 @@ def get_algorithm_wrapper(algorithm_selector):
         return ClustEx2Wrapper()
     elif algorithm_selector == AlgorithmSelector.DIAMOND:
         return DIAMOnDWrapper()
-    elif algorithm_selector == AlgorithmSelector.HOTNET:
-        return HierarchicalHotNetWrapper()
     elif algorithm_selector == AlgorithmSelector.PINNACLEZ:
         return PinnacleZWrapper()
     elif algorithm_selector == AlgorithmSelector.GIGA:
@@ -175,6 +173,8 @@ def get_algorithm_wrapper(algorithm_selector):
         return KPMWrapper()
     elif algorithm_selector == AlgorithmSelector.GF:
         return GrandForestWrapper()
+    elif algorithm_selector == AlgorithmSelector.COSINE:
+        return CosineWrapper()
 
 
 # todo: implement this method
