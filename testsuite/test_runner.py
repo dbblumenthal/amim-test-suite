@@ -11,10 +11,8 @@ class TestRunner(object):
 
     def __init__(self):
         """Constructs TestRunner object."""
-        # self.condition_selectors = list(utils.ConditionSelector)
-        self.condition_selectors = [utils.ConditionSelector.CD]
-        # self.algorithm_selectors = list(utils.AlgorithmSelector)
-        self.algorithm_selectors = [utils.AlgorithmSelector.DIAMOND]
+        self.condition_selectors = list(utils.ConditionSelector)
+        self.algorithm_selectors = list(utils.AlgorithmSelector)
         self.phenotypes = {sel: utils.load_phenotypes(sel) for sel in self.condition_selectors}
         self.pathways = {sel: utils.get_pathways(sel) for sel in self.condition_selectors}
         self.expression_data = {sel: utils.load_expression_data(sel) for sel in self.condition_selectors}
