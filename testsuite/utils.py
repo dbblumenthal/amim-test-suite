@@ -263,8 +263,11 @@ def compute_seed_statistics(ggi_network, seed_genes):
     lcc_ratio = np.max([len(comp) for comp in nx.connected_components(subgraph)]) / subgraph.number_of_nodes()
     sum_shortest_distances = 0
     num_combinations = 0
-    for source, target in itt.combinations(seed_genes, 2):
-        sum_shortest_distances += nx.shortest_path_length(ggi_network, source=source, target=target)
-        num_combinations += 1
+    for source, target in itt.combinations(seed_nodes, 2):
+        try:
+            sum_shortest_distances += nx.shortest_path_length(ggi_network, source=source, target=target)
+            num_combinations += 1
+        except nx.exception.NetworkXNoPath:
+            continue
     mean_shortest_distance = sum_shortest_distances / num_combinations
     return lcc_ratio, mean_shortest_distance

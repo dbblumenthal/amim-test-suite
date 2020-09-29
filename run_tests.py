@@ -1,6 +1,7 @@
 from testsuite.test_runner import TestRunner
 import testsuite.utils as utils
 import argparse
+import os
 
 def get_parser():
     parser = argparse.ArgumentParser('tests the one-network-fits-all hypothesis')
@@ -11,7 +12,8 @@ def get_parser():
 
 
 if __name__ == '__main__':
+    os.chdir('testsuite')
     args = get_parser().parse_args()
     test_runner = TestRunner()
-    test_runner.run_all(args.network, args.num_randomizations, args.verbose)
+    test_runner.run_all(args.network, args.generator, args.verbose)
     test_runner.save_results()

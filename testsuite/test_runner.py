@@ -18,9 +18,10 @@ class TestRunner(object):
         self.phenotypes = {sel: utils.load_phenotypes(sel) for sel in self.condition_selectors}
         self.pathways = {sel: utils.get_pathways(sel) for sel in self.condition_selectors}
         self.expression_data = {sel: utils.load_expression_data(sel) for sel in self.condition_selectors}
-        self.gene_scores = {sel: utils.compute_gene_p_values(self.expression_data[sel], self.phenotypes[sel]) for sel in self.condition_selectors}
-        self.seed_genes = {sel: utils.extract_seed_genes(self.gene_scores[sel]) for sel in self.condition_selectors}
-        self.algorithm_wrappers = {sel: utils.get_algorithm_wrapper(sel) for sel in self.algorithm_selector}
+        self.indicator_matrix = {sel: utils.compute_indicator_matrix(self.expression_data[sel], self.phenotypes[sel]) for sel in self.condition_selectors}
+        self.gene_p_values = {sel: utils.compute_gene_p_values(self.expression_data[sel], self.phenotypes[sel]) for sel in self.condition_selectors}
+        self.seed_genes = {sel: utils.extract_seed_genes(self.gene_p_values[sel]) for sel in self.condition_selectors}
+        self.algorithm_wrappers = {sel: utils.get_algorithm_wrapper(sel) for sel in self.algorithm_selectors}
         self.network_generator_names = []
         self.ggi_network_names = []
         self.condition_names = []
@@ -59,12 +60,14 @@ class TestRunner(object):
         pathways = self.pathways[condition_selector]
         expression_data = self.expression_data[condition_selector]
         seed_genes = self.seed_genes[condition_selector]
+        gene_scores = self.gene_p_values[condition_selector]
+        indicator_matrix = self.indicator_matrix[condition_selector]
         lcc_ratio, mean_shortest_distance = utils.compute_seed_statistics(ggi_network, seed_genes)
         for algorithm_selector in self.algorithm_selectors:
             if verbose:
                 print(f'\t\talgorithm = {str(algorithm_selector)}')
             algorithm_wrapper = self.algorithm_wrappers[algorithm_selector]
-            result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes, seed_genes)
+            result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix)
             mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
             neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
             self.ggi_network_names.append(ggi_network_name)
