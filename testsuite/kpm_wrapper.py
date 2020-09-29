@@ -1,6 +1,8 @@
 from testsuite.algorithm_wrapper import AlgorithmWrapper
 import networkx as nx
 import subprocess
+import numpy as np
+import os
 
 
 class KPMWrapper(AlgorithmWrapper):
@@ -39,20 +41,26 @@ class KPMWrapper(AlgorithmWrapper):
         path_indicator_matrix = '../temp/kpm_indicator_martrix.txt'
         indicator_matrix.T.to_csv(path_indicator_matrix, sep='\t', header=False)
 
-        # Run PinnacleZ.
-        kpm = 'cd ../algorithms/kpm/; java -jar KPM-5.0.jar -strategy=INES -algo=GREEDY -L1=5 -K=2 -pSingleFile=true ' \
-              '-maxSolutions=1'
+
+        # Run KPM.
+        num_case_exceptions = int(np.ceil(indicator_matrix.shape[0] / 10))
+        kpm = f'cd ../algorithms/kpm/; java -jar keypathwayminer-standalone-5.0.jar -strategy=INES -algo=GREEDY -L1={num_case_exceptions} -K=2 -maxSolutions=1'
         output_dir = '../temp/kpm/'
         command = f'{kpm} -matrix1=../{path_indicator_matrix} -graphFile=../{path_ggi} -resultsDir=../{output_dir}'
         subprocess.call(command, shell=True)
 
         # Read the results.
-        # with open(path_output, 'r') as results:
-        #    result_genes = [line for line in results if not line.startswith('#')][0].strip().split('\t')[-1].split(' ')
+        path_output = None
+        for directory in os.listdir('../temp/kpm/tables/'):
+            if directory.startswith('INES_GREEDY'):
+                path_output = f'../temp/kpm/tables/{directory}/Pathway-k-2-l-{num_case_exceptions}-NODES-KPM.txt'
+                break
+        with open(path_output, 'r') as results:
+            result_genes = [line.strip().split('\t')[1] for line in results]
 
         # Delete temporary data.
-        # subprocess.call('rm ../temp/kpm_*', shell=True)
+        subprocess.call('rm -rf ../temp/kpm/', shell=True)
+        subprocess.call('rm ../temp/kpm_*', shell=True)
 
         # Return the results.
-        result_genes = []
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

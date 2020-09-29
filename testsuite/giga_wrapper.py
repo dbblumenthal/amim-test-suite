@@ -53,7 +53,6 @@ class GiGAWrapper(AlgorithmWrapper):
         giga = 'cd ../algorithms/giga/; perl GiGA.pl'
         path_output = '../temp/giga_results.txt'
         command = f'{giga} -i../{path_gene_list} -n../{path_ggi} -g../{path_map} -o../{path_output} -fTXT'
-        print(command)
         subprocess.call(command, shell=True)
 
         # Read the results.

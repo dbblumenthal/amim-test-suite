@@ -209,4 +209,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     test_runner = TestRunner()
     test_runner.run_all(args.num_randomizations, args.num_runs, args.generator, args.verbose)
-    test_runner.save_results()
+    test_runner.save_results

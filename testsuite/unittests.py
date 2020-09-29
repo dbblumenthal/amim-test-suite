@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.GF]
+    return [utils.AlgorithmSelector.KPM]
     # return list(utils.AlgorithmSelector)
 
 
@@ -37,7 +37,7 @@ def load_data(ggi_network_selector, condition_selector, network_generator_select
     print('\tutils.extract_seed_genes() ...')
     seed_genes = utils.extract_seed_genes(gene_scores)
     print('\tutils.compute_indicator_matrix() ...')
-    indicator_matrix = utils.compute_indicator_matrix(expression_data)
+    indicator_matrix = utils.compute_indicator_matrix(expression_data, phenotypes)
     if network_generator_selector != utils.NetworkGeneratorSelector.ORIGINAL:
         print('\tgenerators.generate_network() ...')
         ggi_network = generators.generate_network(ggi_network, None, network_generator_selector)
@@ -49,6 +49,7 @@ def run_algorithm(algorithm_wrapper, data, pathways):
     result_genes, mean_degree = algorithm_wrapper.run_algorithm(*data)
     print('\tscores.compute_mean_mutual_information() ...')
     mean_mutual_information = scores.compute_mean_mutual_information(data[1], data[2], result_genes)
+    print('\tscores.compute_neg_log_gsea_p_value() ...')
     neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
     print(f'\tmean_degree = {mean_degree}, mean_mutual_information = {mean_mutual_information}, '
           f'neg_log_gsea_p_value = {neg_log_gsea_p_value}')

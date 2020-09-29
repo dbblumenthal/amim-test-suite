@@ -99,6 +99,8 @@ class AlgorithmWrapper(object):
         mean_degree : float
             Mean degree of the result genes.
         """
+        if len(result_genes) == 0:
+            return 0.0
         gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
         degrees = [ggi_network.degree[node] for node in ggi_network.nodes() if gene_ids[node] in set(result_genes)]
         return np.mean(degrees)

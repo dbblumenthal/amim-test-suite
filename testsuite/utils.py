@@ -218,22 +218,26 @@ def extract_seed_genes(gene_p_values):
     return [gene for gene, p_value in gene_p_values.items() if p_value < threshold]
 
 
-def compute_indicator_matrix(expression_data):
+def compute_indicator_matrix(expression_data, phenotypes):
     """Transforms the expression data to an indicator matrix.
 
         Parameters
         ----------
         expression_data : pd.DataFrame
             Expression data (indices are sample IDs, column names are gene IDs).
+        phenotypes : phenotypes : np.array, shape (n_samples,)
+            Phenotype data (indices are sample IDs).
 
         Returns
         -------
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data.
         """
-    means = np.mean(expression_data)
-    stds = np.std(expression_data)
-    return (np.fabs(expression_data - means) > 2 * stds) * 1
+    cases = expression_data.loc[phenotypes == 1, ]
+    controls = expression_data.loc[phenotypes == 0, ]
+    means = np.mean(controls)
+    stds = np.std(controls)
+    return (np.fabs(cases - means) > 1.5 * stds) * 1
 
 
 def compute_seed_statistics(ggi_network, seed_genes):

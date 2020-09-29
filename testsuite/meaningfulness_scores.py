@@ -22,6 +22,8 @@ def compute_mean_mutual_information(expression_data, phenotypes, result_genes):
     mutual_information_score : float
         Mean mutual information between expression of selected genes and the phenotypes.
     """
+    if len(result_genes) == 0:
+        return 0.0
     mutual_information = skf.mutual_info_classif(expression_data.loc[:, result_genes], phenotypes, discrete_features=False)
     return np.mean(mutual_information)
 
@@ -41,6 +43,8 @@ def compute_neg_log_gsea_p_value(pathways, result_genes):
     mean neg_log_gsea_p_value : float
         Negative log-transformed p-value of gene set enrichment analysis.
     """
+    if len(result_genes) == 0:
+        return 0.0
     mg = mygene.MyGeneInfo()
 
     out = mg.querymany(result_genes, scopes= 'entrezgene', fields='symbol', species='human', verbose=False)
