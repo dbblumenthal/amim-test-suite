@@ -1,6 +1,10 @@
 # Testing the one-network-fits-all hypothesis 
 
-## Algorithms
+## Python dependencies and algorithms
+
+### Python dependencies
+
+You need to install all Python packages listed in ``testsuite/requirements.txt``.
 
 ### ClustEx2
 
@@ -9,7 +13,7 @@
 
 Compilation under Linux:
 
-```sh
+```shell script
 cd algorithms/clustex2
 ./install_dependencies.sh
 ./install_linux.sh
@@ -17,7 +21,7 @@ cd algorithms/clustex2
 
 Compilation under macOS:
 
-```sh
+```shell script
 cd algorithms/clustex2
 ./install_dependencies.sh
 ./install_macos.sh
@@ -25,11 +29,11 @@ cd algorithms/clustex2
 
 ### GXNA
 
-- Ş. Nacu, R. Critchley-Thorne, P. Lee, S. Holmes (2007): "Gene  expression network analysis and applications to immunology", *Bioinformatics*, https://doi.org/10.1093/bioinformatics/btm019
+- Ş. Nacu, R. Critchley-Thorne, P. Lee, S. Holmes (2007): "Gene  expression network analysis and applications to immunology", *Bioinformatics*, https://doi.org/10.1093/bioinformatics/btm019.
 
 Compilation under Linux and macOS:
 
-```sh
+```shell script
 cd algorithms/gxna
 ./install.sh
 ```
@@ -40,16 +44,38 @@ cd algorithms/gxna
 
 Distributed as Python script, no compilation necessary.
 
+### GiGA
+
+- R. Breitling, A. Amtmann, P. Herzyk (2004): "Graph-based iterative Group Analysis enhances microarray interpretation", *BMC Bioinform.*, https://doi.org/10.1186/1471-2105-5-100.
+
+Distributed as Perl script, no compilation necessary.
+
+### PinnacleZ
+
+-  H.‐Y. Chuang, E. Lee, Y.-T. Liu, D. Lee, T. Ideker (2007): "Network‐based classification of breast cancer metastasis", *Mol. Syst. Biol.*, https://doi.org/:10.1038/msb4100180.
+
+Distributed as jar executable, no compilation necessary.
+
+### KeyPathwayMiner
+
+- N. Alcaraz, H. Kücük, J. Weile, A. Wipat, J. Baumbach (2011): "KeyPathwayMiner: Detecting case-specific biological pathways using expression data", *Internet Mathematics*, https://doi.org/10.1080/15427951.2011.604548.
+- M. List, N. Alcaraz, M. Dissing-Hansen, H.J. Ditzel, J. Mollenhauer, J. Baumbach (2016): "KeyPathwayMinerWeb: online multi-omics network enrichment", *Nucleic Acids Res.*, https://doi.org/10.1093/nar/gkw373.
+
+Distributed as jar executable, no compilation necessary.
+
+
 ### GrandForest and COSINE
 
-```shell script
-sudo R
+Open an R console with sudo rights and run the following commands:
+
+```R
 install.packages(c("data.table", "tidyverse", "devtools", "COSINE", "tidyr"))
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
+}
 BiocManager::install("simpIntLists")
 devtools::install_github("SimonLarsen/grandforest")
 ```
 
-Under macOS, the installation of `data.table` will likely fail. Follow the instructions given here: https://github.com/Rdatatable/data.table/wiki/Installation.
+Under macOS, the installation of ``data.table`` will likely fail. Follow the instructions given here: https://github.com/Rdatatabl`e/data.table/wiki/Installation.
 
