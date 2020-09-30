@@ -43,7 +43,7 @@ class DIAMOnDWrapper(AlgorithmWrapper):
         AlgorithmWrapper.save_array(seed_genes, path_seeds, '\n', None)
 
         # Run DIAMOnD.
-        diamond = 'cd ../algorithms/diamond/; python DIAMOnD.py'
+        diamond = 'cd ../algorithms/DIAMOnD/; python DIAMOnD.py'
         path_output = f'../temp/{prefix}_diamond_results.txt'
         command = f'{diamond} ../{path_ggi} ../{path_seeds} 100 1 ../{path_output}'
         subprocess.call(command, shell=True, stdout=subprocess.PIPE)
