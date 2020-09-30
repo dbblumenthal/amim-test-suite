@@ -5,7 +5,8 @@ import subprocess
 
 class GXNAWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix,
+                      prefix):
         """Runs the algorithm.
 
         Parameters
@@ -22,6 +23,8 @@ class GXNAWrapper(AlgorithmWrapper):
             Scores for all genes (keys are gene IDs).
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
+        prefix : str
+            Prefix to be used for temporary files and directories.
 
         Returns
         -------
@@ -32,38 +35,38 @@ class GXNAWrapper(AlgorithmWrapper):
         """
 
         # Write GGI network in format required by GXNA.
-        path_ggi = '../temp/gxna_ggi.txt'
+        path_ggi = f'../temp/{prefix}_gxna_ggi.txt'
         AlgorithmWrapper.save_network_as_edge_list(ggi_network, path_ggi, ' ', None)
 
         # Write the expression data in the format required by GXNA.
-        path_expr = '../temp/gxna_expression.txt'
+        path_expr = f'../temp/{prefix}_gxna_expression.txt'
         expression_data.to_csv(path_expr, sep=' ', header=False)
 
         # Write the phenotypes in the format required by GXNA.
-        path_phen = '../temp/gxna_phenotypes.txt'
+        path_phen = f'../temp/{prefix}_gxna_phenotypes.txt'
         gene_ids = list(expression_data.columns)
         AlgorithmWrapper.save_array(phenotypes, path_phen, ' ', None)
 
         # Write the mapping file in the format required by GXNA.
-        path_map = '../temp/gxna_mapping.txt'
+        path_map = f'../temp/{prefix}_gxna_mapping.txt'
         with open(path_map, 'w') as mapping_file:
             for gene_id in gene_ids:
                 mapping_file.write(f'{gene_id} {gene_id}\n')
 
         # Run GXNA.
         gxna = 'cd ../algorithms/gxna/; ./gxna'
-        command = f'{gxna} -name gxna -phenoFile ../{path_phen} -expFile ../{path_expr} -edgeFile ../{path_ggi} -mapFile ../{path_map}'
+        command = f'{gxna} -name {prefix}_gxna -phenoFile ../{path_phen} -expFile ../{path_expr} -edgeFile ../{path_ggi} -mapFile ../{path_map}'
         subprocess.call(command, shell=True, stdout=subprocess.PIPE)
 
         # Read the results.
         result_genes = []
-        path_to_output = '../temp/gxna_000_0.txt'
+        path_to_output = f'../temp/{prefix}_gxna_000_0.txt'
         with open(path_to_output, 'r') as gxna_results:
             for line in gxna_results:
                 result_genes.append(line.strip().split()[1])
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/gxna_*', shell=True)
+        subprocess.call(f'rm ../temp/{prefix}_gxna_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

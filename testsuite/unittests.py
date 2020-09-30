@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.GF]
+    return [utils.AlgorithmSelector.KPM]
     # return list(utils.AlgorithmSelector)
 
 
@@ -44,9 +44,9 @@ def load_data(ggi_network_selector, condition_selector, network_generator_select
     return ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix
 
 
-def run_algorithm(algorithm_wrapper, data, pathways):
+def run_algorithm(algorithm_wrapper, data, pathways, prefix):
     print('\talgorithm_wrapper.run_algorithm() ...')
-    result_genes, mean_degree = algorithm_wrapper.run_algorithm(*data)
+    result_genes, mean_degree = algorithm_wrapper.run_algorithm(*data, prefix)
     print('\tscores.compute_mean_mutual_information() ...')
     mean_mutual_information = scores.compute_mean_mutual_information(data[1], data[2], result_genes)
     print('\tscores.compute_neg_log_gsea_p_value() ...')
@@ -65,4 +65,4 @@ def test_algorithm(algorithm_selector, ggi_network_selector, condition_selector,
     print('\tutils.get_algorithm_wrapper() ...')
     algorithm_wrapper = utils.get_algorithm_wrapper(algorithm_selector)
     pathways = utils.get_pathways(condition_selector)
-    run_algorithm(algorithm_wrapper, data, pathways)
+    run_algorithm(algorithm_wrapper, data, pathways, f'{str(ggi_network_selector)}_{str(network_generator_selector)}')

@@ -3,9 +3,11 @@ import networkx as nx
 import subprocess
 import pandas as pd
 
+
 class CosineWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix,
+                      prefix):
         """Runs the algorithm.
 
         Parameters
@@ -22,6 +24,8 @@ class CosineWrapper(AlgorithmWrapper):
             Scores for all genes (keys are gene IDs).
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
+        prefix : str
+            Prefix to be used for temporary files and directories.
 
         Returns
         -------
@@ -32,7 +36,7 @@ class CosineWrapper(AlgorithmWrapper):
         """
 
         # Write GGI network in format required by cosine.
-        path_to_network = '../temp/cosine_ggi.txt'
+        path_to_network = f'../temp/{prefix}_cosine_ggi.txt'
         gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
         inv_map = {str(v): k for k, v in gene_ids.items()}
         expression_data = expression_data[list(inv_map.keys())]
@@ -44,21 +48,21 @@ class CosineWrapper(AlgorithmWrapper):
             for u, v in ggi_network.edges():
                 edge_list_file.write(f'{u}{","}{v}\n')
 
-        expression_data.loc[expression_data.index[phenotypes == 1]].to_csv('../temp/cosine_expr1.txt')
-        expression_data.loc[expression_data.index[phenotypes == 0]].to_csv('../temp/cosine_expr2.txt')
+        expression_data.loc[expression_data.index[phenotypes == 1]].to_csv(f'../temp/{prefix}_cosine_expr1.txt')
+        expression_data.loc[expression_data.index[phenotypes == 0]].to_csv(f'../temp/{prefix}_cosine_expr2.txt')
 
-        cosine = 'cd ../algorithms/cosine/; Rscript cosine.R'
-        subprocess.call(cosine, shell=True, stdout=subprocess.PIPE)
+        command = f'cd ../algorithms/cosine/; Rscript cosine.R {prefix}'
+        subprocess.call(command, shell=True, stdout=subprocess.PIPE)
 
         # Read the results.
         result_genes = []
-        path_to_output = '../temp/cosine_output.txt'
+        path_to_output = f'../temp/{prefix}_cosine_output.txt'
         with open(path_to_output, 'r') as results:
             for line in results:
                 result_genes.append(gene_ids[int(line.strip())])
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/cosine_*', shell=True)
+        subprocess.call(f'rm ../temp/{prefix}_cosine_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

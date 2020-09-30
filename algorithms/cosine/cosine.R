@@ -263,24 +263,26 @@ monitorFunc<-function(obj) {
   print(outputBest)
 }
 
+args = commandArgs(trailingOnly=TRUE)
+prefix = args[1]
 
-data1 = read.table("../../temp/cosine_expr1.txt", sep = ",")
+data1 = read.table(paste("../../temp/", prefix, "_cosine_expr1.txt", sep=""), sep = ",")
 data1 = data1[-1,colnames(data1)!= "V1"]
 data1 = data.matrix(data1)
 colnames(data1) = as.character(1:dim(data1)[2])
 
-data2 = read.table("../../temp/cosine_expr2.txt", sep = ",")
+data2 = read.table(paste("../../temp/", prefix, "_cosine_expr2.txt", sep=""), sep = ",")
 data2 = data2[-1,colnames(data2)!= "V1"]
 data2 = data.matrix(data2)
 
 colnames(data2) = as.character(1:dim(data2)[2])
 
-PPI = as.matrix(read.table('../../temp/cosine_ggi.txt', sep = ","), header = FALSE)
+PPI = as.matrix(read.table(paste("../../temp/", prefix, "_cosine_ggi.txt", sep=""), sep = ","), header = FALSE)
 
 test <- diff_gen_PPI(data1,data2,PPI)
 
 GA_result<-GA_search_PPI(lambda=0.1,test[[1]],test[[2]],PPI, num_iter=100, muCh=0.05, zToR=10, minsize=10)
-fileConn<-file("../../temp/cosine_output.txt")
+fileConn<-file(paste("../../temp/", prefix, "_cosine_output.txt", sep=""))
 writeLines(as.character(GA_result$Subnet), fileConn)
 close(fileConn)
 

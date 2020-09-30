@@ -5,7 +5,8 @@ import subprocess
 
 class PinnacleZWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix,
+                      prefix):
         """Runs the algorithm.
 
         Parameters
@@ -22,6 +23,8 @@ class PinnacleZWrapper(AlgorithmWrapper):
             Scores for all genes (keys are gene IDs).
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
+        prefix : str
+            Prefix to be used for temporary files and directories.
 
         Returns
         -------
@@ -32,20 +35,20 @@ class PinnacleZWrapper(AlgorithmWrapper):
         """
 
         # Write GGI network in format required by PinnacleZ.
-        path_ggi = '../temp/pinnaclez_ggi.sif'
+        path_ggi = f'../temp/{prefix}_pinnaclez_ggi.sif'
         AlgorithmWrapper.save_network_as_edge_list(ggi_network, path_ggi, '\tpp\t', None)
 
         # Write the expression data in the format required by PinnacleZ.
-        path_expr = '../temp/pinnaclez_expression.txt'
+        path_expr = f'../temp/{prefix}_pinnaclez_expression.txt'
         expression_data.T.to_csv(path_expr, sep='\t', index_label='genes')
 
         # Write the phenotypes in the format required by PinnacleZ.
-        path_phen = '../temp/pinnaclez_phenotypes.txt'
+        path_phen = f'../temp/{prefix}_pinnaclez_phenotypes.txt'
         AlgorithmWrapper.save_array(phenotypes, path_phen, '\n', None, True)
 
         # Run PinnacleZ.
         pinnaclez = 'cd ../algorithms/pinnaclez/; java -jar pinnaclez.jar'
-        path_output = '../temp/pinnaclez_results.txt'
+        path_output = f'../temp/{prefix}_pinnaclez_results.txt'
         command = f'{pinnaclez} ../{path_phen} ../{path_expr} ../{path_ggi} -o ../{path_output}'
         subprocess.call(command, shell=True)
 
@@ -54,7 +57,7 @@ class PinnacleZWrapper(AlgorithmWrapper):
             result_genes = [line for line in results if not line.startswith('#')][0].strip().split('\t')[-1].split(' ')
 
         # Delete temporary data.
-        subprocess.call('rm ../temp/pinnaclez_*', shell=True)
+        subprocess.call(f'rm ../temp/{prefix}_pinnaclez_*', shell=True)
 
         # Return the results.
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)

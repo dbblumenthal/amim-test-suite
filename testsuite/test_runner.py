@@ -3,7 +3,6 @@ import testsuite.meaningfulness_scores as scores
 import testsuite.network_generators as generators
 import pandas as pd
 import numpy as np
-import argparse
 
 
 class TestRunner(object):
@@ -61,11 +60,13 @@ class TestRunner(object):
         gene_scores = self.gene_p_values[condition_selector]
         indicator_matrix = self.indicator_matrix[condition_selector]
         lcc_ratio, mean_shortest_distance = utils.compute_seed_statistics(ggi_network, seed_genes)
+        prefix = f'{ggi_network_name}_{network_generator_name}'
         for algorithm_selector in self.algorithm_selectors:
             if verbose:
                 print(f'\t\talgorithm = {str(algorithm_selector)}')
             algorithm_wrapper = self.algorithm_wrappers[algorithm_selector]
-            result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix)
+            result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes,
+                                                                        seed_genes, gene_scores, indicator_matrix, prefix)
             mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
             neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
             self.ggi_network_names.append(ggi_network_name)

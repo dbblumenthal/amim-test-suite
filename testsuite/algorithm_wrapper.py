@@ -6,7 +6,7 @@ import numpy as np
 class AlgorithmWrapper(object):
     """Abstract wrapper class for the network enrichment algorithms used in the tests."""
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix, prefix):
         """Runs the algorithm.
 
         Parameters
@@ -23,6 +23,8 @@ class AlgorithmWrapper(object):
             Scores for all genes (keys are gene IDs).
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
+        prefix : str
+            Prefix to be used for temporary files and directories.
 
         Returns
         -------

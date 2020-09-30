@@ -5,8 +5,10 @@ library(simpIntLists)
 library(grandforest)
 
 setwd('.')
-edges = read.table('../../temp/gf_ggi.txt', sep = "\t", header = TRUE)
-D <- read.table("../../temp/gf_expr.txt", sep = ",", header= TRUE)
+args = commandArgs(trailingOnly=TRUE)
+prefix = args[1]
+edges = read.table(paste("../../temp/", prefix, "_gf_ggi.txt", sep=""), sep = "\t", header = TRUE)
+D <- read.table(paste("../../temp/", prefix, "_gf_expr.txt", sep=""), sep = ",", header= TRUE)
 D$phenotype<- as.factor(D$phenotype)
 colnames(D) <- gsub("^X", "",  colnames(D))
 
@@ -25,7 +27,7 @@ results <- importance(model) %>%
   head(100) %>%
   enframe 
 
-fileConn<-file("../../temp/gf_output.txt")
+fileConn<-file(paste("../../temp/", prefix, "_gf_output.txt", sep=""))
 writeLines(results$name, fileConn)
 close(fileConn)
 
