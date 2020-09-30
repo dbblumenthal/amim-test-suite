@@ -47,7 +47,7 @@ class PinnacleZWrapper(AlgorithmWrapper):
         AlgorithmWrapper.save_array(phenotypes, path_phen, '\n', None, True)
 
         # Run PinnacleZ.
-        pinnaclez = 'cd ../algorithms/pinnaclez/; java -jar pinnaclez.jar'
+        pinnaclez = 'cd ../algorithms/pinnaclez/; java -Xmx2g -jar pinnaclez.jar'
         path_output = f'../temp/{prefix}_pinnaclez_results.txt'
         command = f'{pinnaclez} ../{path_phen} ../{path_expr} ../{path_ggi} -o ../{path_output}'
         subprocess.call(command, shell=True)

@@ -47,7 +47,7 @@ class KPMWrapper(AlgorithmWrapper):
 
         # Run KPM.
         num_case_exceptions = int(np.ceil(indicator_matrix.shape[0] / 10))
-        kpm = f'cd ../algorithms/kpm/; java -jar keypathwayminer-standalone-5.0.jar -strategy=INES -algo=GREEDY -L1={num_case_exceptions} -K=2 -maxSolutions=1'
+        kpm = f'cd ../algorithms/kpm/; java -Xmx2g -jar keypathwayminer-standalone-5.0.jar -strategy=INES -algo=GREEDY -L1={num_case_exceptions} -K=2 -maxSolutions=1'
         output_dir = f'../temp/{prefix}_kpm/'
         command = f'{kpm} -matrix1=../{path_indicator_matrix} -graphFile=../{path_ggi} -resultsDir=../{output_dir}'
         subprocess.call(command, shell=True)
