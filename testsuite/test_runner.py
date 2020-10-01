@@ -35,7 +35,7 @@ class TestRunner(object):
         self.results = None
         self.outfile = ''
 
-    def run_on_network(self, ggi_network, seed, ggi_network_name, network_generator_name, condition_selector, verbose):
+    def run_on_network(self, ggi_network, seed, ggi_network_name, network_generator_name, condition_selector, method_selector, verbose):
         """Runs the tests for a given condition on a given network.
 
         Parameters
@@ -61,12 +61,13 @@ class TestRunner(object):
         indicator_matrix = self.indicator_matrix[condition_selector]
         lcc_ratio, mean_shortest_distance = utils.compute_seed_statistics(ggi_network, seed_genes)
         prefix = f'{ggi_network_name}_{network_generator_name}'
-        for algorithm_selector in self.algorithm_selectors:
+        if method_selector != "all":
             if verbose:
-                print(f'\t\talgorithm = {str(algorithm_selector)}')
-            algorithm_wrapper = self.algorithm_wrappers[algorithm_selector]
+                print(f'\t\talgorithm = {str(method_selector)}')
+            algorithm_wrapper = self.algorithm_wrappers[method_selector]
             result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes,
-                                                                        seed_genes, gene_scores, indicator_matrix, prefix)
+                                                                        seed_genes, gene_scores, indicator_matrix,
+                                                                        prefix)
             mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
             neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
             self.ggi_network_names.append(ggi_network_name)
@@ -76,14 +77,36 @@ class TestRunner(object):
             self.nums_genes_seeds.append(len(seed_genes))
             self.lcc_ratios_seeds.append(lcc_ratio)
             self.mean_shortest_distances_seeds.append(mean_shortest_distance)
-            self.algorithm_names.append(str(algorithm_selector))
+            self.algorithm_names.append(str(method_selector))
             self.mean_degrees_results.append(mean_degree)
             self.nums_genes_results.append(len(result_genes))
             self.result_genes.append(','.join(result_genes))
             self.mean_mutual_informations.append(mean_mutual_information)
             self.neg_log_gsea_p_values.append(neg_log_gsea_p_value)
+        else:
+            for algorithm_selector in self.algorithm_selectors:
+                if verbose:
+                    print(f'\t\talgorithm = {str(algorithm_selector)}')
+                algorithm_wrapper = self.algorithm_wrappers[algorithm_selector]
+                result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes,
+                                                                            seed_genes, gene_scores, indicator_matrix, prefix)
+                mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
+                neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)
+                self.ggi_network_names.append(ggi_network_name)
+                self.random_seeds.append(seed)
+                self.network_generator_names.append(network_generator_name)
+                self.condition_names.append(str(condition_selector))
+                self.nums_genes_seeds.append(len(seed_genes))
+                self.lcc_ratios_seeds.append(lcc_ratio)
+                self.mean_shortest_distances_seeds.append(mean_shortest_distance)
+                self.algorithm_names.append(str(algorithm_selector))
+                self.mean_degrees_results.append(mean_degree)
+                self.nums_genes_results.append(len(result_genes))
+                self.result_genes.append(','.join(result_genes))
+                self.mean_mutual_informations.append(mean_mutual_information)
+                self.neg_log_gsea_p_values.append(neg_log_gsea_p_value)
 
-    def run_on_original_network(self, ggi_network_selector, condition_selector, verbose):
+    def run_on_original_network(self, ggi_network_selector, condition_selector, method_selector, verbose):
         """Runs the tests for a given condition on a given original network.
 
         Parameters
@@ -98,9 +121,9 @@ class TestRunner(object):
         ggi_network = utils.load_ggi_network(ggi_network_selector, self.expression_data[condition_selector])
         ggi_network_name = str(ggi_network_selector)
         network_generator_name = str(utils.NetworkGeneratorSelector.ORIGINAL)
-        self.run_on_network(ggi_network, -1, ggi_network_name, network_generator_name, condition_selector, verbose)
+        self.run_on_network(ggi_network, -1, ggi_network_name, network_generator_name, condition_selector, method_selector, verbose)
 
-    def run_on_random_networks(self, ggi_network_selector, condition_selector, network_generator_selector,
+    def run_on_random_networks(self, ggi_network_selector, condition_selector, network_generator_selector, method_selector,
                                verbose):
         """Runs the tests for a given condition on randomized version of a given original network.
 
@@ -122,7 +145,7 @@ class TestRunner(object):
         seeds = [np.random.randint(low=0, high=np.iinfo(np.uint32).max) for _ in range(num_randomizations)]
         for seed in seeds:
             ggi_network = generators.generate_network(original_ggi_network, seed, network_generator_selector)
-            self.run_on_network(ggi_network, seed, ggi_network_name, network_generator_name, condition_selector, verbose)
+            self.run_on_network(ggi_network, seed, ggi_network_name, network_generator_name, condition_selector, method_selector, verbose)
 
     def clear(self):
         """Clears the results of the last previous run."""
@@ -142,7 +165,7 @@ class TestRunner(object):
         self.results = None
         self.outfile = ''
 
-    def run_all(self, ggi_network_selector, network_generator_selector, verbose):
+    def run_all(self, ggi_network_selector, network_generator_selector, method_selector, verbose):
         """Runs all tests.
 
         Parameters
@@ -155,16 +178,16 @@ class TestRunner(object):
             Print progress to stdout.
         """
         self.clear()
-        self.outfile = f'../results/{str(ggi_network_selector)}_{str(network_generator_selector)}.csv'
+        self.outfile = f'../results/{str(ggi_network_selector)}_{str(network_generator_selector)}_{str(method_selector)}.csv'
         if verbose:
             print(f'GGI network = {str(ggi_network_selector)}')
         for condition_selector in self.condition_selectors:
             if verbose:
                 print(f'\tcondition = {str(condition_selector)}')
             if network_generator_selector == utils.NetworkGeneratorSelector.ORIGINAL:
-                self.run_on_original_network(ggi_network_selector, condition_selector, verbose)
+                self.run_on_original_network(ggi_network_selector, condition_selector, method_selector, verbose)
             else:
-                self.run_on_random_networks(ggi_network_selector, condition_selector, network_generator_selector, verbose)
+                self.run_on_random_networks(ggi_network_selector, condition_selector, network_generator_selector, method_selector, verbose)
         self.results = pd.DataFrame({'network_generator_name': self.network_generator_names,
                                      'ggi_network_name': self.ggi_network_names,
                                      'condition_name': self.condition_names,
