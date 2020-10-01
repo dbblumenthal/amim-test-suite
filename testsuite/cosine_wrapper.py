@@ -52,7 +52,7 @@ class CosineWrapper(AlgorithmWrapper):
         expression_data.loc[expression_data.index[phenotypes == 0]].to_csv(f'../temp/{prefix}_cosine_expr2.txt')
 
         command = f'cd ../algorithms/cosine/; Rscript cosine.R {prefix}'
-        subprocess.call(command, shell=True, stdout=subprocess.PIPE)
+        subprocess.call(command, shell=True)
 
         # Read the results.
         result_genes = []
