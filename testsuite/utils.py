@@ -54,12 +54,12 @@ class NetworkGeneratorSelector(Enum):
 # todo: add one member for each algorithm
 class AlgorithmSelector(Enum):
     """Enum specifying which network enrichment algorithm should be used."""
+    KPM = 'KPM'
     DIAMOND = 'DIAMOND'
     GXNA = 'GXNA'
     CLUSTEX2 = 'CLUSTEX2'
     PINNACLEZ = 'PINNACLEZ'
     GIGA = 'GIGA'
-    KPM = 'KPM'
     GF = 'GF'
     COSINE = 'COSINE'
 
