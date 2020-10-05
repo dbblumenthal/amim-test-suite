@@ -4,6 +4,8 @@ import argparse
 import os
 import multiprocessing as mp
 import itertools as itt
+import traceback
+
 
 
 def get_parser():
@@ -36,7 +38,8 @@ def run_tests(ggi_network_selector, network_generator_selector, method_selector 
             print('saving the results')
         test_runner.save_results()
         return 0
-    except:
+    except Exception:
+        traceback.print_exc()
         return 1
 
 
