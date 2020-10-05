@@ -38,6 +38,8 @@ class CosineWrapper(AlgorithmWrapper):
         # Write GGI network in format required by cosine.
         path_to_network = f'../temp/{prefix}_cosine_ggi.txt'
         gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
+        #start enumeration from 1
+        gene_ids = {k+1: v for k, v in gene_ids.items()}
         inv_map = {str(v): k for k, v in gene_ids.items()}
         expression_data = expression_data[list(inv_map.keys())]
         expression_data = expression_data.rename(columns=inv_map)
