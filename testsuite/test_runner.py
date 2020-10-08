@@ -122,14 +122,15 @@ class TestRunner(object):
         verbose : bool
             Print progress to stdout.
         """
-        num_randomizations = 10
         original_ggi_network = utils.load_ggi_network(ggi_network_selector, self.expression_data[condition_selector])
+        num_randomizations = 10
         ggi_network_name = str(ggi_network_selector)
         network_generator_name = str(network_generator_selector)
         seeds = [np.random.randint(low=0, high=np.iinfo(np.uint32).max) for _ in range(num_randomizations)]
         for seed in seeds:
             ggi_network = generators.generate_network(original_ggi_network, seed, network_generator_selector)
             self.run_on_network(ggi_network, seed, ggi_network_name, network_generator_name, condition_selector, algorithm_selector, verbose)
+
 
     def clear(self):
         """Clears the results of the last previous run."""

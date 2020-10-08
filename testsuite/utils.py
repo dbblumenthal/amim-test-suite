@@ -46,6 +46,7 @@ class NetworkGeneratorSelector(Enum):
     SHUFFLED = 'SHUFFLED'
     SCALE_FREE = 'SCALE_FREE'
     UNIFORM = 'UNIFORM'
+    RDPN = "RDPN"
 
     def __str__(self):
         return self.value
