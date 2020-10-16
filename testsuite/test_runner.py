@@ -60,7 +60,7 @@ class TestRunner(object):
         pathways = self.pathways[condition_selector]
         expression_data = self.expression_data[condition_selector]
         seed_genes = self.seed_genes[condition_selector]
-        gene_scores = self.gene_p_values[condition_selector]
+        p_values = self.gene_p_values[condition_selector]
         indicator_matrix = self.indicator_matrix[condition_selector]
         lcc_ratio, mean_shortest_distance = utils.compute_seed_statistics(ggi_network, seed_genes)
         prefix = f'{ggi_network_name}_{network_generator_name}'
@@ -68,7 +68,7 @@ class TestRunner(object):
             print(f'\t\talgorithm = {str(algorithm_selector)}')
         algorithm_wrapper = self.algorithm_wrappers[algorithm_selector]
         result_genes, mean_degree = algorithm_wrapper.run_algorithm(ggi_network, expression_data, phenotypes,
-                                                                    seed_genes, gene_scores, indicator_matrix,
+                                                                    seed_genes, p_values, indicator_matrix,
                                                                     prefix)
         mean_mutual_information = scores.compute_mean_mutual_information(expression_data, phenotypes, result_genes)
         neg_log_gsea_p_value = scores.compute_neg_log_gsea_p_value(pathways, result_genes)

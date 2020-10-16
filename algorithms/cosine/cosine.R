@@ -281,7 +281,7 @@ PPI = as.matrix(read.table(paste("../../temp/", prefix, "_cosine_ggi.txt", sep="
 
 test <- diff_gen_PPI(data1,data2,PPI)
 
-GA_result<-GA_search_PPI(lambda=0.1,test[[1]],test[[2]],PPI, num_iter=100, muCh=0.05, zToR=10, minsize=10)
+GA_result<-GA_search_PPI(lambda=0.1,test[[1]],test[[2]],PPI, num_iter=1, muCh=0.05, zToR=10, minsize=10)
 fileConn<-file(paste("../../temp/", prefix, "_cosine_output.txt", sep=""))
 writeLines(as.character(GA_result$Subnet), fileConn)
 close(fileConn)

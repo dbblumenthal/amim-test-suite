@@ -5,8 +5,7 @@ import subprocess
 
 class GiGAWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix,
-                      prefix):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, p_values, indicator_matrix, prefix):
         """Runs the algorithm.
 
         Parameters
@@ -19,8 +18,8 @@ class GiGAWrapper(AlgorithmWrapper):
             Phenotype data (indices are sample IDs).
         seed_genes : list of str
             Seed genes (entries are gene IDs).
-        gene_scores : dict of str: float
-            Scores for all genes (keys are gene IDs).
+        p_values : dict of str: float
+            P-values for all genes (keys are gene IDs).
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
         prefix : str
@@ -40,7 +39,7 @@ class GiGAWrapper(AlgorithmWrapper):
 
         # Write the sorted gene list in the format required by GiGA.
         path_gene_list = f'../temp/{prefix}_giga_sorted_genes.txt'
-        sorted_gene_list = sorted(list(gene_scores.items()), key=lambda item: item[1])
+        sorted_gene_list = sorted(list(p_values.items()), key=lambda item: item[1])
         with open(path_gene_list, 'w') as gene_list:
             for gene, _ in sorted_gene_list:
                 gene_list.write(f'{gene}\n')

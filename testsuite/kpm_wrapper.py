@@ -7,8 +7,7 @@ import os
 
 class KPMWrapper(AlgorithmWrapper):
 
-    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix,
-                      prefix):
+    def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, p_values, indicator_matrix, prefix):
         """Runs the algorithm.
 
         Parameters
@@ -21,8 +20,8 @@ class KPMWrapper(AlgorithmWrapper):
             Phenotype data (indices are sample IDs).
         seed_genes : list of str
             Seed genes (entries are gene IDs).
-        gene_scores : dict of str: float
-            Scores for all genes (keys are gene IDs).
+        p_values : dict of str: float
+            P-values for all genes (keys are gene IDs).
         indicator_matrix : pd.DataFrame
             Indicator matrix obtained from expression data (indices are sample IDs, column names are gene IDs).
         prefix : str
