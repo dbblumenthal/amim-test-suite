@@ -15,7 +15,7 @@ def get_parser():
     sequential.add_argument('--network', type=utils.GGINetworkSelector, choices=list(utils.GGINetworkSelector), required=True)
     sequential.add_argument('--generator', type=utils.NetworkGeneratorSelector, choices=list(utils.NetworkGeneratorSelector), required=True)
     sequential.add_argument('--method', type=utils.AlgorithmSelector, choices=list(utils.AlgorithmSelector), required=True)
-
+    sequential.add_argument('--condition', type=utils.ConditionSelector, choices=list(utils.ConditionSelector))
     sequential.add_argument('--verbose', action='store_true', help='print progress to stdout')
     parallel = subparsers.add_parser('parallel', help='runs the tests in parallel')
     parallel.add_argument('--methods', type=utils.AlgorithmSelector, choices=list(utils.AlgorithmSelector), nargs='+',
@@ -24,19 +24,20 @@ def get_parser():
                           nargs='+', default=list(utils.GGINetworkSelector))
     parallel.add_argument('--generators', type=utils.NetworkGeneratorSelector, choices=list(utils.NetworkGeneratorSelector),
                           nargs='+', default=list(utils.NetworkGeneratorSelector))
+    parallel.add_argument('--conditions', type=utils.ConditionSelector, choices=list(utils.ConditionSelector), nargs='+')
     parallel.add_argument('--verbose', action='store_true', help='print progress to stdout')
 
     return parser
 
 
-def run_tests(ggi_network_selector, network_generator_selector, algorithm_selector, verbose=False):
+def run_tests(ggi_network_selector, network_generator_selector, algorithm_selector, condition_selectors, verbose=False):
     try:
         if verbose:
             print('loading data ...')
         test_runner = TestRunner()
         if verbose:
             print('running the tests ...')
-        test_runner.run_all(ggi_network_selector, network_generator_selector, algorithm_selector, verbose)
+        test_runner.run_all(ggi_network_selector, network_generator_selector, condition_selectors, algorithm_selector, verbose)
         if verbose:
             print('saving the results')
         test_runner.save_results()
@@ -51,15 +52,13 @@ if __name__ == '__main__':
     args = get_parser().parse_args()
     if args.mode == 'sequential':
         print('running tests sequentially ...')
-        if args.method != None:
-            run_tests(args.network, args.generator, args.method, args.verbose)
-        else:
-            run_tests(args.network, args.generator, args.method, args.verbose)
+        run_tests(args.network, args.generator, args.method, [args.condition], args.verbose)
 
     elif args.mode == 'parallel':
         print('running tests in parallel ...')
         pool = mp.Pool(len(args.networks) * len(args.generators))
-        exit_codes = pool.starmap(run_tests, list(itt.product(args.networks, args.generators, args.methods)))
+        exit_codes = pool.starmap(run_tests, list(itt.product(args.networks, args.generators, args.methods,
+                                                              args.conditions, [args.verbose])))
         print(f'exit codes: {exit_codes}')
 
 
