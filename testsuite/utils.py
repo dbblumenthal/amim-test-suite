@@ -12,12 +12,8 @@ from testsuite.giga_wrapper import GiGAWrapper
 from testsuite.kpm_wrapper import KPMWrapper
 from testsuite.grandforest_wrapper import GrandForestWrapper
 from testsuite.cosine_wrapper import CosineWrapper
-<<<<<<< HEAD
 from testsuite.hotnet_wrapper import HotNetWrapper
-=======
 from testsuite.netcore_wrapper import NetCoreWrapper
-
->>>>>>> 9c058738d4f98f669b3023c506575192e7458fea
 
 
 # todo: add one member for each condition
@@ -69,11 +65,8 @@ class AlgorithmSelector(Enum):
     GIGA = 'GIGA'
     GF = 'GF'
     COSINE = 'COSINE'
-<<<<<<< HEAD
     HOTNET = 'HOTNET'
-=======
     NETCORE = 'NETCORE'
->>>>>>> 9c058738d4f98f669b3023c506575192e7458fea
 
     def __str__(self):
         return self.value
