@@ -12,6 +12,8 @@ from testsuite.giga_wrapper import GiGAWrapper
 from testsuite.kpm_wrapper import KPMWrapper
 from testsuite.grandforest_wrapper import GrandForestWrapper
 from testsuite.cosine_wrapper import CosineWrapper
+from testsuite.netcore_wrapper import NetCoreWrapper
+
 
 
 # todo: add one member for each condition
@@ -63,6 +65,7 @@ class AlgorithmSelector(Enum):
     GIGA = 'GIGA'
     GF = 'GF'
     COSINE = 'COSINE'
+    NETCORE = 'NETCORE'
 
     def __str__(self):
         return self.value
@@ -176,6 +179,9 @@ def get_algorithm_wrapper(algorithm_selector):
         return GrandForestWrapper()
     elif algorithm_selector == AlgorithmSelector.COSINE:
         return CosineWrapper()
+    elif algorithm_selector == AlgorithmSelector.NETCORE:
+        return NetCoreWrapper()
+
 
 
 # todo: implement this method
