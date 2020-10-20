@@ -5,8 +5,8 @@
 /results/*
 !/results/README.md
 
-/algorithms/hierarchical-hotnet/examples/results/
-/algorithms/hierarchical-hotnet/examples/intermediate/
+/algorithms/hierarchical_hotnet/examples/results/
+/algorithms/hierarchical_hotnet/examples/intermediate/
 
 # Binaries
 /algorithms/clustex2/clustex2

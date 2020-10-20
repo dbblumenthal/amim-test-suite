@@ -184,7 +184,6 @@ def get_algorithm_wrapper(algorithm_selector):
 
 
 
-# todo: implement this method
 def compute_gene_p_values(expression_data, phenotypes):
     """Computes p-values from the expression data and the phenotypes.
 
@@ -200,11 +199,26 @@ def compute_gene_p_values(expression_data, phenotypes):
     gene_p_values : dict of str: float
             The p-value of two-sided Mann-Whitney U test (keys are gene IDs).
     """
-    # todo: replace this dummy implementation
     cases = expression_data.loc[phenotypes == 1, ]
     controls = expression_data.loc[phenotypes == 0, ]
     genes = expression_data.columns
     return {gene: sps.mannwhitneyu(cases[gene], controls[gene], alternative='two-sided')[1] for gene in genes}
+
+
+def p_value_to_score(p_value):
+    """Transforms p-values to scores via -log-transformation.
+
+    Parameters
+    ----------
+    p_value : float
+        The p-value.
+
+    Returns
+    -------
+    neg_log_p_value : float
+        Negative log-transformed p-value.
+    """
+    return -np.log10(p_value)
 
 
 # todo: implement this method
