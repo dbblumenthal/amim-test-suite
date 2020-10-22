@@ -7,7 +7,6 @@ import itertools as itt
 import traceback
 
 
-
 def get_parser():
     parser = argparse.ArgumentParser('tests the one-network-fits-all hypothesis')
     subparsers = parser.add_subparsers(dest='mode', required=True, help='run tests sequentially or in parallel')
@@ -37,7 +36,7 @@ def run_tests(ggi_network_selector, network_generator_selector, algorithm_select
         test_runner = TestRunner()
         if verbose:
             print('running the tests ...')
-        test_runner.run_all(ggi_network_selector, network_generator_selector, condition_selectors, algorithm_selector, verbose)
+        test_runner.run_all(ggi_network_selector, network_generator_selector, algorithm_selector, condition_selectors, verbose)
         if verbose:
             print('saving the results')
         test_runner.save_results()
