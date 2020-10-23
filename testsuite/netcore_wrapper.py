@@ -3,21 +3,14 @@ import networkx as nx
 import subprocess
 import pandas as pd
 import numpy as np
-#from testsuite.utils import load_ggi_network, load_phenotypes, compute_gene_p_values, load_expression_data
 import os
 import sys
-os.chdir("/home/olga/Dropbox/testing-onfah/algorithms/NetCore")
-sys.path.append('/home/olga/Dropbox/testing-onfah/algorithms/NetCore/netcore')
+#os.chdir("algorithms/NetCore")
+sys.path.append('algorithms/NetCore/netcore/')
 from permutations_test import make_network_permutations
-os.chdir("/home/olga/Dropbox/testing-onfah/testsuite")
+#os.chdir("/home/olga/Dropbox/testing-onfah/testsuite")
 
-#prefix = f'{"HPRD"}_{"ORIGINAL"}'
-#expression_data = load_expression_data("GSE3790")
-#phenotypes = load_phenotypes("GSE3790")
-#ggi_network = load_ggi_network("HPRD",expression_data)
-#gene_scores = compute_gene_p_values(expression_data, phenotypes)
 
-#TODO: remove all the commented out lines
 class NetCoreWrapper(AlgorithmWrapper):
 
     def run_algorithm(self, ggi_network, expression_data, phenotypes, seed_genes, gene_scores, indicator_matrix,
