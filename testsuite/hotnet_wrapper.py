@@ -76,7 +76,7 @@ class HotNetWrapper(AlgorithmWrapper):
         # Compile Fortran module and set number of cores.
         command = 'cd ../algorithms/hierarchical_hotnet/src; f2py -c fortran_module.f95 -m fortran_module > /dev/null'
         subprocess.call(command, shell=True, stdout=subprocess.PIPE)
-        num_cores = 2
+        num_cores = 34
 
         # Construct similarity matrix.
         print('Construct similarity matrix.')
