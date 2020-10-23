@@ -150,7 +150,7 @@ class TestRunner(object):
         self.results = None
         self.outfile = ''
 
-    def run_all(self, ggi_network_selector, network_generator_selector, algorithm_selector, verbose):
+    def run_all(self, ggi_network_selector, network_generator_selector, algorithm_selector, condition_selectors, verbose):
         """Runs all tests.
 
         Parameters
@@ -161,6 +161,8 @@ class TestRunner(object):
             Specifies which random generator should be used.
         algorithm_selector : AlgorithmSelector
             Specifies the algorithm that should be run.
+        condition_selectors : list of ConditionSelector or None
+            Specifies on which condition the algorithm should be run.
         verbose : bool
             Print progress to stdout.
         """
@@ -168,7 +170,9 @@ class TestRunner(object):
         self.outfile = f'../results/{str(ggi_network_selector)}_{str(network_generator_selector)}_{str(algorithm_selector)}.csv'
         if verbose:
             print(f'GGI network = {str(ggi_network_selector)}')
-        for condition_selector in self.condition_selectors:
+        if condition_selectors is None:
+            condition_selectors = self.condition_selectors
+        for condition_selector in condition_selectors:
             if verbose:
                 print(f'\tcondition = {str(condition_selector)}')
             if network_generator_selector == utils.NetworkGeneratorSelector.ORIGINAL:

@@ -6,7 +6,7 @@ import testsuite.meaningfulness_scores as scores
 
 
 def algorithms():
-    return [utils.AlgorithmSelector.CLUSTEX2]
+    return [utils.AlgorithmSelector.HOTNET]
     # return list(utils.AlgorithmSelector)
 
 
