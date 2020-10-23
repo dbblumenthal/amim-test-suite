@@ -8,7 +8,6 @@ import sys
 #os.chdir("algorithms/NetCore")
 sys.path.append('algorithms/NetCore/netcore/')
 from permutations_test import make_network_permutations
-#os.chdir("/home/olga/Dropbox/testing-onfah/testsuite")
 
 
 class NetCoreWrapper(AlgorithmWrapper):
@@ -54,14 +53,13 @@ class NetCoreWrapper(AlgorithmWrapper):
         gene_scores = pd.DataFrame(gene_scores)
         gene_scores.to_csv(path_to_pvals,index = False, sep = "\t")
 
-#TODO: change swap factor to 100, num_perm to 100, num_cores to 34
-        permutations_num = 5
+        permutations_num = 100
         make_network_permutations(net_file=path_to_network,
                                   net_name=f'{prefix}_netcore',
                                   output_path="../temp/",
                                   num_perm=permutations_num,
-                                  swap_factor=1,
-                                  num_cores=5)
+                                  swap_factor=100,
+                                  num_cores=34)
 
 
         # Run netcore
