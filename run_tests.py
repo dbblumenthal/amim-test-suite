@@ -47,7 +47,7 @@ def run_tests(ggi_network_selector, network_generator_selector, algorithm_select
 
 
 if __name__ == '__main__':
-    os.chdir('testsuite')
+    os.chdir('/nfs/scratch/olgala/testing-onfah/testsuite')
     args = get_parser().parse_args()
     if args.mode == 'sequential':
         print('running tests sequentially ...')
