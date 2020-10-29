@@ -170,8 +170,13 @@ class TestRunner(object):
         self.outfile = f'../results/{str(ggi_network_selector)}_{str(network_generator_selector)}_{str(algorithm_selector)}.csv'
         if verbose:
             print(f'GGI network = {str(ggi_network_selector)}')
-        if condition_selectors[0] is None:
-            condition_selectors = self.condition_selectors
+        try
+            if condition_selectors[0] is None:
+                condition_selectors = self.condition_selectors
+        except TypeError:
+            if condition_selectors is None:
+                condition_selectors = self.condition_selectors
+
         for condition_selector in condition_selectors:
             if verbose:
                 print(f'\tcondition = {str(condition_selector)}')
