@@ -57,7 +57,7 @@ if __name__ == '__main__':
         print('running tests in parallel ...')
         pool = mp.Pool(len(args.networks) * len(args.generators))
         exit_codes = pool.starmap(run_tests, list(itt.product(args.networks, args.generators, args.methods,
-                                                              args.conditions, [args.verbose])))
+                                                              [args.conditions], [args.verbose])))
         print(f'exit codes: {exit_codes}')
 
 
