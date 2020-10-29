@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 import testsuite.utils as utils
+import graph_tool.all as gt
 
 def generate_RDPN(ggi_network, seed):
     """Generates random GGI network where nodes keep the exactly same degrees.
@@ -17,36 +18,74 @@ def generate_RDPN(ggi_network, seed):
     RDPN_network : nx.Graph
         Random GGI network where nodes keep their expected degrees.
     """
-    edge_list = list(ggi_network.edges())
-    A = nx.to_numpy_matrix(ggi_network)
-    l = len(edge_list)
-    seeds = np.arange(l*100)
-    if seed == None:
-        seed = 1
-    np.random.seed(seed=seed)
-    np.random.shuffle(seeds)
-    for i in range(100 * l):
-        np.random.seed(seed=seeds[i])
-        idx = np.random.choice(l-1, 2)
-        e1,e2 = [edge_list[i] for i in idx]
-        stop = False
-        for node1 in e1:
-            for node2 in e2:
-                if A[node1,node2]:
-                    stop = True
-        if not stop:
-            A[e1[0],e2[1]] = 1
-            A[e1[1],e2[0]] = 1
-            A[e1[0],e1[1]] = 0
-            A[e2[0],e2[1]] = 0
-            del edge_list[idx[0]]
-            del edge_list[idx[1]]
-            edge_list.append((e1[0],e2[1]))
-            edge_list.append((e1[1],e2[0]))
-    rewired_network = nx.from_numpy_matrix(A)
+    d = nx.to_dict_of_lists(ggi_network)
+    edges = [(i, j) for i in d for j in d[i]]
+    edges_sorted = []
+    for e in edges:
+        if e[1] <e[0]:
+            edges_sorted.append((e[1],e[0]))
+        else:
+            edges_sorted.append(e)
+    edges_sorted = list(set(edges_sorted))
+
+    GT = gt.Graph(directed=False)
+    GT.add_edge_list(edges_sorted)
+
+    gt.random_rewire(GT,model = "constrained-configuration", n_iter = 100, edge_sweep = True)
+
+    edges_new = list(GT.get_edges())
+    edges_new = [tuple(x) for x in edges_new]
+    rewired_network = nx.Graph()
+    rewired_network.add_edges_from(edges_new)
     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
     nx.set_node_attributes(rewired_network, gene_ids, 'GeneID')
     return(rewired_network)
+
+# def generate_RDPN(ggi_network, seed):
+#     """Generates random GGI network where nodes keep the exactly same degrees.
+#
+#     Parameters
+#     ----------
+#     ggi_network : nx.Graph
+#         Original GGI network.
+#     seed : convertible to np.uint32 or None
+#         Seed used by the generator.
+#
+#     Returns
+#     -------
+#     RDPN_network : nx.Graph
+#         Random GGI network where nodes keep their expected degrees.
+#     """
+#     edge_list = list(ggi_network.edges())
+#     A = nx.to_numpy_matrix(ggi_network)
+#     l = len(edge_list)
+#     seeds = np.arange(l*100)
+#     if seed == None:
+#         seed = 1
+#     np.random.seed(seed=seed)
+#     np.random.shuffle(seeds)
+#     for i in range(100 * l):
+#         np.random.seed(seed=seeds[i])
+#         idx = np.random.choice(l-1, 2)
+#         e1,e2 = [edge_list[i] for i in idx]
+#         stop = False
+#         for node1 in e1:
+#             for node2 in e2:
+#                 if A[node1,node2]:
+#                     stop = True
+#         if not stop:
+#             A[e1[0],e2[1]] = 1
+#             A[e1[1],e2[0]] = 1
+#             A[e1[0],e1[1]] = 0
+#             A[e2[0],e2[1]] = 0
+#             del edge_list[idx[0]]
+#             del edge_list[idx[1]]
+#             edge_list.append((e1[0],e2[1]))
+#             edge_list.append((e1[1],e2[0]))
+#     rewired_network = nx.from_numpy_matrix(A)
+#     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
+#     nx.set_node_attributes(rewired_network, gene_ids, 'GeneID')
+#     return(rewired_network)
 
 # def generate_complete_network(ggi_network, seed = None):
 #     """Generates a fully connected GGI network.
