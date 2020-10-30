@@ -20,22 +20,16 @@ def generate_RDPN(ggi_network, seed):
     """
     d = nx.to_dict_of_lists(ggi_network)
     edges = [(i, j) for i in d for j in d[i]]
-    edges_sorted = []
-    for e in edges:
-        if e[1] <e[0]:
-            edges_sorted.append((e[1],e[0]))
-        else:
-            edges_sorted.append(e)
-    edges_sorted = list(set(edges_sorted))
-
     GT = gt.Graph(directed=False)
-    GT.add_edge_list(edges_sorted)
+    GT.add_vertex(sorted(ggi_network.nodes())[-1])
+    GT.add_edge_list(edges)
 
     gt.random_rewire(GT,model = "constrained-configuration", n_iter = 100, edge_sweep = True)
 
     edges_new = list(GT.get_edges())
     edges_new = [tuple(x) for x in edges_new]
     rewired_network = nx.Graph()
+    rewired_network.add_nodes_from(ggi_network.nodes())
     rewired_network.add_edges_from(edges_new)
     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
     nx.set_node_attributes(rewired_network, gene_ids, 'GeneID')
