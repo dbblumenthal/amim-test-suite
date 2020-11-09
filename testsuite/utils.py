@@ -36,6 +36,9 @@ class GGINetworkSelector(Enum):
     STRING = 'STRING'
     APID = 'APID'
     IID = 'IID'
+    IID_BRAIN = "IID_BRAIN"
+    IID_LUNG = "IID_LUNG"
+
 
     def __str__(self):
         return self.value
