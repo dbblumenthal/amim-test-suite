@@ -197,21 +197,21 @@ GA_search_PPI <-function(lambda, scaled_node_score, scaled_edge_score, PPI,
 {
   all_genes <- names(scaled_node_score)
   subset_score <- function(sub) {
-    genes <- all_genes[sub == 1]
-    n <- length(genes)
+    genes = all_genes[sub == 1]
+    n = length(genes)
     if (n < minsize) {
       return(10000)
     }
     else {
-      node_score <- sum(scaled_node_score[genes])/sqrt(n)
-      edges <- PPI[, 1] %in% genes & PPI[, 2] %in% genes
+      node_score = sum(scaled_node_score[genes], na.rm=TRUE)/sqrt(n)
+      edges = PPI[, 1] %in% genes & PPI[, 2] %in% genes
       m <- sum(edges)
       if (m == 0) 
         total_score <- -10000
       if (m > 0) {
-        edge_score <- sum(scaled_edge_score[edges])/sqrt(m)
-        total_score <- lambda * edge_score + (1 - lambda) * 
-          node_score
+        
+        edge_score = sum(scaled_edge_score[edges], na.rm=TRUE)/sqrt(m)
+        total_score = lambda * edge_score + (1 - lambda) * node_score
       }
       return(-total_score)
     }
@@ -281,7 +281,7 @@ PPI = as.matrix(read.table(paste("../../temp/", prefix, "_cosine_ggi.txt", sep="
 
 test <- diff_gen_PPI(data1,data2,PPI)
 
-GA_result<-GA_search_PPI(lambda=0.1,test[[1]],test[[2]],PPI, num_iter=1, muCh=0.05, zToR=10, minsize=10)
+GA_result<-GA_search_PPI(lambda=0.1,test[[1]],test[[2]],PPI, num_iter=50, muCh=0.05, zToR=10, minsize=10)
 fileConn<-file(paste("../../temp/", prefix, "_cosine_output.txt", sep=""))
 writeLines(as.character(GA_result$Subnet), fileConn)
 close(fileConn)
