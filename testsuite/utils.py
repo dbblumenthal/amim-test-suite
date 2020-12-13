@@ -13,7 +13,10 @@ from testsuite.kpm_wrapper import KPMWrapper
 from testsuite.grandforest_wrapper import GrandForestWrapper
 from testsuite.cosine_wrapper import CosineWrapper
 from testsuite.hotnet_wrapper import HotNetWrapper
+from testsuite.domino_wrapper import DominoWrapper
+
 from testsuite.netcore_wrapper import NetCoreWrapper
+from testsuite.custom_wrapper import CustomWrapper
 
 
 # todo: add one member for each condition
@@ -70,6 +73,8 @@ class AlgorithmSelector(Enum):
     COSINE = 'COSINE'
     HOTNET = 'HOTNET'
     NETCORE = 'NETCORE'
+    CUSTOM = "CUSTOM"
+    DOMINO = "DOMINO"
 
     def __str__(self):
         return self.value
@@ -187,6 +192,10 @@ def get_algorithm_wrapper(algorithm_selector):
         return HotNetWrapper()
     elif algorithm_selector == AlgorithmSelector.NETCORE:
         return NetCoreWrapper()
+    elif algorithm_selector == AlgorithmSelector.DOMINO:
+        return DominoWrapper()
+    elif algorithm_selector == AlgorithmSelector.CUSTOM:
+        return CustomWrapper()
 
 
 def compute_gene_p_values(expression_data, phenotypes):
