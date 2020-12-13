@@ -88,7 +88,7 @@ class DominoWrapper(AlgorithmWrapper):
 
         # 3. Insert the command to run your method, direct the output to path_to_output
         path_to_output = f'../../temp/'
-        command = f'cd ../algorithms/DOMINO; domino --active_genes_files {path_to_seeds} --network_file {path_to_network} --slices_file {outfile} --output_folder {path_to_output}'
+        command = f'cd ../algorithms/DOMINO; domino --active_genes_files {path_to_seeds} --network_file {path_to_network} --slices_file {outfile} --output_folder {path_to_output} --visualization false'
         subprocess.call(command, shell = True)
 
         # 4. Process results such that they are formatted as a list of strings (entez IDs)
@@ -103,9 +103,9 @@ class DominoWrapper(AlgorithmWrapper):
         res = list(set(res))
         mapping_rev = {v: k for k,v in mapping.items()}
         result_genes = [mapping_rev[x] for x in res]
+        subprocess.call(f'rm -r ../temp/{path_to_seeds[:-4]}', shell=True)
 
         subprocess.call(f'rm ../temp/{prefix}_domino_*', shell=True)
-        subprocess.call(f'rm -r ../temp/{path_to_seeds[:-4]}', shell=True)
 
 
         return result_genes, AlgorithmWrapper.mean_degree(ggi_network, result_genes)
