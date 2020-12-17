@@ -1,10 +1,10 @@
 # Testing the one-network-fits-all hypothesis 
 
-## Python dependencies and algorithms
 
-### Python dependencies
+## Python dependencies
 
 You need a Python3 interpreter for running the tests. Moreover, you need to install all Python packages listed in ``testsuite/requirements.txt``, e.g., using Anaconda.
+## Reproduction of the manuscript results
 
 ### ClustEx2
 
@@ -87,4 +87,97 @@ devtools::install_github("SimonLarsen/grandforest")
 ```
 
 Under macOS, the installation of ``data.table`` will likely fail. Follow the instructions given here: https://github.com/Rdatatabl`e/data.table/wiki/Installation.
+
+## Test your own NEM
+
+To test your own method you need the following:
+1. Basic knowledge of python to follow provided instructions.
+2. A way to run your method from a command-line.
+3. All dependencies needed for your method.
+
+###  Step-by-step instruction
+* Download the repository and open the provided template *testsuite/custom_wrapper.py*.
+* Do not change any lines from *testsuite/custom_wrapper.py*. Just add what you need to make your method work.
+* For your convince the wrapper script is divided in 4 parts that are described in the example bellow:
+ 
+Please keep the "prefix" variable exactly as shown in the example. It allows to distinguish this run from all others, parse results and remove all temp files.
+
+
+1: Network is passed in the variable *ggi_network* as networkx graph where "GeneID" attribute correspond to entrez gene ID.
+The network should be then saved in a format that is appropriate for you tool. For instance, if your tool requiers a .tsv file without a header:
+```python
+# 1. Write GGI network in format required by your method
+path_to_network = f'../temp/{prefix}_custom_ggi.txt'
+with open(path_to_network, 'w') as edge_list_file:
+    gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
+    for u, v in ggi_network.edges():
+        edge_list_file.write(f'{gene_ids[u]}\t{gene_ids[v]}\n')
+```
+2: Save gene expression and phenotype in the nessesary format. In the example bellow we save phenotype as one of columns in gene expression and save both as .txt. "phenotypes" variable is a list of phenotypes given for this condition 
+
+```python
+# 2. Write expression data and phenotype in the format required by your method
+path_to_expression = f'../temp/{prefix}_custom_expr.txt'
+expression_data["phenotype"] = phenotypes
+expression_data.to_csv(path_to_expression, index = False)
+```
+
+3: 
+Write the command for your tool. 
+Don't forget to navigate to the corresponding folder and pass prefix to your method such that it can save the output to *path_to_output*.
+
+```python
+# 3. Insert the command to run your method, direct the output to path_to_output
+path_to_output = f'../temp/{prefix}_custom_output.txt'
+command = f'cd ../algorithms/your_method_directory/; ./your_method.sh {prefix}"
+subprocess.call(command, shell = True, stdout=subprocess.PIPE)
+```
+4: Add the resulting gene as list of strings (Entrez ids)
+
+```python
+# 4. Process results such that they are formatted as a list of strings (entez IDs)
+result_genes = []
+with open(path_to_output, 'r') as results:
+    for line in results:
+        result_genes.append(line.strip())
+```
+* When the wrapper is done, all you need to do is to run the pipline:
+```shell
+#for sequential execution
+python run_tests.py -sequential --method CUSTOM  
+# OR for parallel execution
+python run_tests.py -parallel --methods CUSTOM  
+
+```
+The results will be stored in the results folder in the following format: NETWORK_GENERATOR_CUSTOM.csv
+
+### Visualize your results
+For the results analysis we provide users with one-sample t-test or Mann-Whitney u-test. 
+One sample t-test is applied when not enough data on the original network is available to execute Mann-Whitney u-test.
+Please note, that minimal information that is needed for the analysis includes 1 run on the original network (any network) and 1 run on any generator for any condition.
+For instance:
+```shell
+#for sequential execution
+python run_tests.py sequential --network HPRD --generator ORIGINAL --method CUSTOM  --condition GSE3790 --verbose
+python run_tests.py sequential --network HPRD --generator RDPN --method CUSTOM  --condition GSE3790 --verbose
+
+#OR for parallel
+python run_tests.py parallel --networks HPRD --generators ORIGINAL RDPN --methods CUSTOM  --conditions GSE3790 --verbose
+```
+
+
+
+```shell
+python show_plots.py
+```
+
+
+
+
+
+
+
+
+
+
 

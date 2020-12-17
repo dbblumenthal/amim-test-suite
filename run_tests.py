@@ -23,7 +23,8 @@ def get_parser():
                           nargs='+', default=list(utils.GGINetworkSelector))
     parallel.add_argument('--generators', type=utils.NetworkGeneratorSelector, choices=list(utils.NetworkGeneratorSelector),
                           nargs='+', default=list(utils.NetworkGeneratorSelector))
-    parallel.add_argument('--conditions', type=utils.ConditionSelector, choices=list(utils.ConditionSelector), nargs='+')
+    parallel.add_argument('--conditions', type=utils.ConditionSelector, choices=list(utils.ConditionSelector),
+                          nargs='+',default=list(utils.ConditionSelector))
     parallel.add_argument('--verbose', action='store_true', help='print progress to stdout')
 
     return parser
