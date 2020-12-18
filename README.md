@@ -50,11 +50,6 @@ Distributed as Python script, no compilation necessary.
 
 Distributed as Perl script, no compilation necessary.
 
-### PinnacleZ
-
--  H.‐Y. Chuang, E. Lee, Y.-T. Liu, D. Lee, T. Ideker (2007): "Network‐based classification of breast cancer metastasis", *Mol. Syst. Biol.*, https://doi.org/:10.1038/msb4100180.
-
-Distributed as jar executable, no compilation necessary.
 
 ### KeyPathwayMiner
 
@@ -87,6 +82,10 @@ devtools::install_github("SimonLarsen/grandforest")
 ```
 
 Under macOS, the installation of ``data.table`` will likely fail. Follow the instructions given here: https://github.com/Rdatatabl`e/data.table/wiki/Installation.
+
+### DOMINO
+Follow instructions for installations here https://github.com/Shamir-Lab/DOMINO
+Please pay attention if `pcst-fast` package was succesfully installed. Otherwise install it with `python setup.py install` from here https://github.com/fraenkel-lab/pcst_fast
 
 ## Test your own NEM
 
@@ -164,8 +163,7 @@ python run_tests.py sequential --network HPRD --generator RDPN --method CUSTOM  
 #OR for parallel
 python run_tests.py parallel --networks HPRD --generators ORIGINAL RDPN --methods CUSTOM  --conditions GSE3790 --verbose
 ```
-
-
+To visualize the results please run:
 
 ```shell
 python show_plots.py
