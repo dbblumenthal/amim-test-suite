@@ -1,10 +1,16 @@
-# Testing the one-network-fits-all hypothesis 
+#  Testing limits of active module identification
+## Table of contents
+* [Python dependencies](#python_dependencies)
+* [Reproduction of the manuscript results](#reproduction)
+* [Run the pipeline](#run)
+* [Test your own NEM](#test)
+* [Contact](#contact)
 
-
-## Python dependencies
+## Python dependencies <a name="python_dependencies"></a>
 
 You need a Python3 interpreter for running the tests. Moreover, you need to install all Python packages listed in ``testsuite/requirements.txt``, e.g., using Anaconda.
-## Reproduction of the manuscript results
+
+## Reproduction of the manuscript results <a name="reproduction"></a>
 
 ### ClustEx2
 
@@ -87,7 +93,23 @@ Under macOS, the installation of ``data.table`` will likely fail. Follow the ins
 Follow instructions for installations here https://github.com/Shamir-Lab/DOMINO
 Please pay attention if `pcst-fast` package was succesfully installed. Otherwise install it with `python setup.py install` from here https://github.com/fraenkel-lab/pcst_fast
 
-## Test your own NEM
+## To run the pipeline <a name="run"></a>
+
+Navigate to the directory , activate the environment and run the pipeline in the parallel mode:
+```shell
+python run_tests.py parallel
+```
+To see all available options:
+
+```shell
+python run_tests.py parallel -h
+```
+You can also execute only one combination at a time by running the script in a sequential mode. To see all parameters run:
+```shell
+python run_tests.py sequential -h
+
+```
+## Test your own NEM <a name="test"></a>
 
 To test your own method you need the following:
 1. Basic knowledge of python to follow provided instructions.
@@ -112,6 +134,8 @@ with open(path_to_network, 'w') as edge_list_file:
     for u, v in ggi_network.edges():
         edge_list_file.write(f'{gene_ids[u]}\t{gene_ids[v]}\n')
 ```
+NOTE: here we discuss only formatting and not the actual content of your files. If you wish to include your own network, you need to save it as `CUSTOM.tsv` file without a header in the `data/networks/` directory and then run the pipeline with `--network CUSTOM`
+
 2: Save gene expression and phenotype in the nessesary format. In the example bellow we save phenotype as one of columns in gene expression and save both as .txt. "phenotypes" variable is a list of phenotypes given for this condition 
 
 ```python
@@ -151,9 +175,7 @@ python run_tests.py -parallel --methods CUSTOM
 The results will be stored in the results folder in the following format: NETWORK_GENERATOR_CUSTOM.csv
 
 ### Visualize your results
-For the results analysis we provide users with one-sample t-test or Mann-Whitney u-test. 
-One sample t-test is applied when not enough data on the original network is available to execute Mann-Whitney u-test.
-Please note, that minimal information that is needed for the analysis includes 1 run on the original network (any network) and 1 run on any generator for any condition.
+Please note, that minimal information that is needed for the visualization includes 1 run on the original network (any network) and 1 run on any generator for any condition.
 For instance:
 ```shell
 #for sequential execution
@@ -168,6 +190,11 @@ To visualize the results please run:
 ```shell
 python show_plots.py
 ```
+## Contact <a name="contact"></a>
+If you experience any difficulties or need more options for your own tool evaluation, please reach out to us:
+
+* [Olga Lazareva](mailto:olga.lazareva@wzw.tum.de)
+* [David Blumenthal](mailto:markus.list@wzw.tum.de)
 
 
 

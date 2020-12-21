@@ -17,6 +17,7 @@ from testsuite.domino_wrapper import DominoWrapper
 
 from testsuite.netcore_wrapper import NetCoreWrapper
 from testsuite.custom_wrapper import CustomWrapper
+flatten = lambda l: [item for sublist in l for item in sublist]
 
 
 # todo: add one member for each condition
@@ -41,6 +42,7 @@ class GGINetworkSelector(Enum):
     IID = 'IID'
     IID_BRAIN = "IID_BRAIN"
     IID_LUNG = "IID_LUNG"
+    CUSTOM = "CUSTOM"
 
 
     def __str__(self):
@@ -50,11 +52,11 @@ class GGINetworkSelector(Enum):
 class NetworkGeneratorSelector(Enum):
     """Enum specifying which random generator should be used."""
     ORIGINAL = 'ORIGINAL'
-    REWIRED = 'REWIRED'
+    EXPECTED_DEGREE = 'EXPECTED_DEGREE'
     SHUFFLED = 'SHUFFLED'
     SCALE_FREE = 'SCALE_FREE'
     UNIFORM = 'UNIFORM'
-    RDPN = "RDPN"
+    REWIRED = "REWIRED"
 
     def __str__(self):
         return self.value
@@ -95,6 +97,16 @@ def load_ggi_network(ggi_network_selector, expression_data):
     ggi_network : nx.Graph
         The selected GGI network as a networkx graph without genes not contained in the expression data.
     """
+    if str(ggi_network_selector) == "CUSTOM":
+        edges = pd.read_csv("../data/networks/CUSTOM.tsv", sep = "\t", header = None)
+        edges = edges.values
+        G = nx.Graph()
+        G.add_edges_from(edges)
+        all_genes = list(set(flatten(edges)))
+        gene_ids = {x: x for x in all_genes}
+        nx.set_node_attributes(G, gene_ids, "GeneID")
+        nx.write_graphml(G, "../data/networks/CUSTOM.graphml")
+
     ggi_network = nx.read_graphml(f'../data/networks/{str(ggi_network_selector)}.graphml', node_type=int)
     gene_ids = nx.get_node_attributes(ggi_network, 'GeneID')
     selected_genes = set([str(x) for x in expression_data.columns])
