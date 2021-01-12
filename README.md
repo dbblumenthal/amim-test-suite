@@ -109,7 +109,7 @@ You can also execute only one combination at a time by running the script in a s
 python run_tests.py sequential -h
 
 ```
-## Test your own NEM <a name="test"></a>
+## Test your own AMIM <a name="test"></a>
 
 To test your own method you need the following:
 1. Basic knowledge of python to follow provided instructions.
