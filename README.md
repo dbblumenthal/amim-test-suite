@@ -194,7 +194,7 @@ python show_plots.py
 If you experience any difficulties or need more options for your own tool evaluation, please reach out to us:
 
 * [Olga Lazareva](mailto:olga.lazareva@wzw.tum.de)
-* [David Blumenthal](mailto:markus.list@wzw.tum.de)
+* [David Blumenthal](mailto:david.blumenthal@wzw.tum.de)
 
 
 
