@@ -4,6 +4,7 @@
 * [Reproduction of the manuscript results](#reproduction)
 * [Run the pipeline](#run)
 * [Test your own NEM](#test)
+* [Citing](#citing)
 * [Contact](#contact)
 
 ## Python dependencies <a name="python_dependencies"></a>
@@ -191,7 +192,7 @@ To visualize the results please run:
 python show_plots.py
 ```
 
-## Citing
+## Citing <a name="citing"></a>
 
 If you use this test-suite for a scientific publication, please cite the following paper:
 
