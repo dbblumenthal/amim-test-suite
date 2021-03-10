@@ -190,6 +190,13 @@ To visualize the results please run:
 ```shell
 python show_plots.py
 ```
+
+## Citing
+
+If you use this test-suite for a scientific publication, please cite the following paper:
+
+- O. Lazareva, J. Baumbach, M. List, D. B. Blumenthal: On the limits of active module identification, **Brief. Bioinform.**, 2021, [DOI: 10.1093/bib/bbab066](https://doi.org/10.1093/bib/bbab066).  
+
 ## Contact <a name="contact"></a>
 If you experience any difficulties or need more options for your own tool evaluation, please reach out to us:
 
