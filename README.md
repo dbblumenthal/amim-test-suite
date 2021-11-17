@@ -9,7 +9,9 @@
 
 ## Python dependencies <a name="python_dependencies"></a>
 
-You need a Python3 interpreter for running the tests. Moreover, you need to install all Python packages listed in ``testsuite/requirements.txt``, e.g., using Anaconda.
+You need a Python3 interpreter (recommended version: 3.7)  for running the tests. Moreover, you need to install all Python packages listed in ``testsuite/requirements.txt``, e.g., using Anaconda.
+
+In addition, you also need the graph library [graph-tool](https://graph-tool.skewed.de/). You can compile it from source or build an Anaconda environment which includes graph-tool. Both options are explained the website.
 
 ## Reproduction of the manuscript results <a name="reproduction"></a>
 
@@ -92,7 +94,7 @@ Under macOS, the installation of ``data.table`` will likely fail. Follow the ins
 
 ### DOMINO
 Follow instructions for installations here https://github.com/Shamir-Lab/DOMINO
-Please pay attention if `pcst-fast` package was succesfully installed. Otherwise install it with `python setup.py install` from here https://github.com/fraenkel-lab/pcst_fast
+Please pay attention if `pcst-fast` package was succesfully installed, which normally is the case for Python3.7 or lower. Otherwise install it with `python setup.py install` from here https://github.com/fraenkel-lab/pcst_fast
 
 ## To run the pipeline <a name="run"></a>
 
